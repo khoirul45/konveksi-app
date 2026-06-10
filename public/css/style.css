@@ -1,0 +1,311 @@
+/* Konveksi App - Custom CSS */
+body { font-family: 'Segoe UI', sans-serif; }
+
+.brand-link { border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+.small-box .icon { font-size: 70px; top: 15px; }
+
+.badge-lg { font-size: 0.9rem !important; padding: 6px 12px !important; }
+
+.btn-xs { padding: 2px 8px; font-size: 0.75rem; }
+
+.card { border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+
+.card-outline { box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+
+.main-header { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+.info-box { border-radius: 8px; }
+
+/* Foto karyawan */
+.img-circle { border: 2px solid #dee2e6; }
+
+/* Progress bar animasi */
+.progress-bar { transition: width 0.6s ease; }
+
+/* Tabel responsive */
+@media (max-width: 768px) {
+  .content-header h1 { font-size: 1.2rem; }
+}
+
+/* Badge proses */
+.badge { font-size: 0.8rem; }
+
+/* Sidebar active */
+.nav-sidebar .nav-link.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Print styles */
+@media print {
+  .main-header, .main-sidebar, .main-footer, .btn, .card-tools { display: none !important; }
+  .content-wrapper { margin-left: 0 !important; }
+}
+
+/* ===================================================
+   DARK MODE
+   =================================================== */
+[data-theme="dark"] body,
+body.dark-mode {
+  background-color: #1a2232 !important;
+  color: #dee2e6 !important;
+}
+[data-theme="dark"] .wrapper,
+body.dark-mode .wrapper { background-color: #1a2232 !important; }
+
+/* Sidebar */
+[data-theme="dark"] .main-sidebar { background-color: #0f1923 !important; }
+
+/* Navbar */
+[data-theme="dark"] .main-header.navbar {
+  background-color: #1e2a38 !important;
+  border-bottom: 1px solid #2c3e50 !important;
+}
+[data-theme="dark"] .main-header .nav-link { color: #adb5bd !important; }
+
+/* Content wrapper */
+[data-theme="dark"] .content-wrapper { background-color: #1a2232 !important; }
+
+/* Cards */
+[data-theme="dark"] .card {
+  background-color: #1e2a38 !important;
+  border-color: #2c3e50 !important;
+  color: #dee2e6 !important;
+}
+[data-theme="dark"] .card-header {
+  background-color: #162030 !important;
+  border-bottom-color: #2c3e50 !important;
+  color: #dee2e6 !important;
+}
+[data-theme="dark"] .card-footer {
+  background-color: #162030 !important;
+  border-top-color: #2c3e50 !important;
+}
+
+/* Tables */
+[data-theme="dark"] .table {
+  color: #dee2e6 !important;
+}
+[data-theme="dark"] .table td,
+[data-theme="dark"] .table th { border-color: #2c3e50 !important; }
+[data-theme="dark"] .table-hover tbody tr:hover { background-color: #243044 !important; }
+[data-theme="dark"] .thead-dark th { background-color: #0f1923 !important; }
+[data-theme="dark"] .thead-light th {
+  background-color: #1e2a38 !important;
+  color: #adb5bd !important;
+  border-color: #2c3e50 !important;
+}
+[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) { background-color: #1a2635 !important; }
+
+/* Forms */
+[data-theme="dark"] .form-control {
+  background-color: #2c3e50 !important;
+  border-color: #3d5166 !important;
+  color: #dee2e6 !important;
+}
+[data-theme="dark"] .form-control:focus {
+  background-color: #2c3e50 !important;
+  border-color: #3c8dbc !important;
+  color: #dee2e6 !important;
+}
+[data-theme="dark"] .input-group-text {
+  background-color: #243044 !important;
+  border-color: #3d5166 !important;
+  color: #adb5bd !important;
+}
+[data-theme="dark"] .custom-file-label {
+  background-color: #2c3e50 !important;
+  border-color: #3d5166 !important;
+  color: #adb5bd !important;
+}
+
+/* Info boxes & small boxes */
+[data-theme="dark"] .info-box { background-color: #1e2a38 !important; color: #dee2e6 !important; }
+
+/* Footer */
+[data-theme="dark"] .main-footer {
+  background-color: #1e2a38 !important;
+  border-top-color: #2c3e50 !important;
+  color: #adb5bd !important;
+}
+
+/* Alerts */
+[data-theme="dark"] .alert-success { background-color: #1a3326 !important; border-color: #1e4d35 !important; color: #75e0a0 !important; }
+[data-theme="dark"] .alert-danger  { background-color: #3b1f1f !important; border-color: #7f2020 !important; color: #ff8a80 !important; }
+[data-theme="dark"] .alert-warning { background-color: #3b2e0f !important; border-color: #7f5c10 !important; color: #ffd082 !important; }
+
+/* Dropdown */
+[data-theme="dark"] .dropdown-menu {
+  background-color: #1e2a38 !important;
+  border-color: #2c3e50 !important;
+}
+[data-theme="dark"] .dropdown-item { color: #dee2e6 !important; }
+[data-theme="dark"] .dropdown-item:hover { background-color: #243044 !important; }
+
+/* DataTables */
+[data-theme="dark"] .dataTables_wrapper .dataTables_filter input,
+[data-theme="dark"] .dataTables_wrapper .dataTables_length select {
+  background-color: #2c3e50 !important;
+  border-color: #3d5166 !important;
+  color: #dee2e6 !important;
+}
+[data-theme="dark"] .dataTables_wrapper .dataTables_info,
+[data-theme="dark"] .dataTables_wrapper .dataTables_filter label,
+[data-theme="dark"] .dataTables_wrapper .dataTables_length label { color: #adb5bd !important; }
+[data-theme="dark"] .page-item .page-link {
+  background-color: #1e2a38 !important;
+  border-color: #2c3e50 !important;
+  color: #adb5bd !important;
+}
+[data-theme="dark"] .page-item.active .page-link { background-color: #3c8dbc !important; }
+
+/* Modal */
+[data-theme="dark"] .modal-content { background-color: #1e2a38 !important; color: #dee2e6 !important; }
+[data-theme="dark"] .modal-header { border-bottom-color: #2c3e50 !important; }
+[data-theme="dark"] .modal-footer { border-top-color: #2c3e50 !important; }
+[data-theme="dark"] .close { color: #dee2e6 !important; }
+
+/* Misc text */
+[data-theme="dark"] .text-muted { color: #8899aa !important; }
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3,
+[data-theme="dark"] h4, [data-theme="dark"] h5 { color: #dee2e6 !important; }
+
+/* ===================================================
+   THEME TOGGLE BUTTON (di navbar)
+   =================================================== */
+#navbar-theme-btn {
+  cursor: pointer; font-size: 16px;
+  transition: transform 0.3s;
+}
+#navbar-theme-btn:hover { transform: scale(1.2); }
+
+/* ===================================================
+   PAGE TRANSITION
+   =================================================== */
+.page-transition { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===================================================
+   MOBILE RESPONSIVE FIXES
+   =================================================== */
+
+@media (max-width: 576px) {
+
+  /* ===== TABEL — scroll horizontal dengan hint ===== */
+  .card-body {
+    padding: 0.75rem !important;
+  }
+  .table-responsive-mobile {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Semua tabel di dalam card otomatis scrollable */
+  .card .table-bordered {
+    min-width: 500px;
+  }
+
+  /* ===== INFO BOX — 2 kolom di mobile ===== */
+  .info-box {
+    min-height: 70px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+  }
+  .info-box .info-box-icon {
+    width: 60px;
+    line-height: 60px;
+    font-size: 1.5rem;
+  }
+  .info-box .info-box-content {
+    padding: 4px 8px;
+  }
+  .info-box .info-box-text {
+    font-size: 12px;
+  }
+  .info-box .info-box-number {
+    font-size: 16px;
+  }
+
+  /* ===== SMALL BOX DASHBOARD ===== */
+  .small-box h3 {
+    font-size: 1.6rem;
+  }
+  .small-box .icon {
+    font-size: 50px;
+    top: 10px;
+  }
+  .small-box p {
+    font-size: 12px;
+  }
+
+  /* ===== NAVBAR ===== */
+  .main-header .navbar-nav .nav-link {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  /* ===== CONTENT HEADER ===== */
+  .content-header h1 {
+    font-size: 1.1rem !important;
+  }
+  .content-header {
+    padding: 8px 0 !important;
+  }
+  .content {
+    padding: 0 8px 8px !important;
+  }
+
+  /* ===== CARD HEADER — tombol & judul ===== */
+  .card-header {
+    padding: 0.6rem 0.75rem;
+  }
+  .card-header .card-title {
+    font-size: 14px;
+  }
+  .card-tools .btn {
+    padding: 3px 8px;
+    font-size: 12px;
+  }
+
+  /* ===== TABEL — font lebih kecil ===== */
+  .table td, .table th {
+    padding: 6px 8px !important;
+    font-size: 12px;
+  }
+  .btn-xs {
+    padding: 3px 7px;
+    font-size: 11px;
+  }
+
+  /* ===== BADGE ===== */
+  .badge-lg {
+    font-size: 0.8rem !important;
+    padding: 4px 8px !important;
+  }
+
+  /* ===== FORM ===== */
+  .form-control {
+    font-size: 14px;
+  }
+  .card-footer .btn {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  /* ===== DATATABLES — sembunyikan fitur yang makan tempat ===== */
+  .dataTables_length {
+    display: none;
+  }
+  .dataTables_filter input {
+    width: 140px !important;
+  }
+  .dataTables_info {
+    font-size: 11px;
+  }
+}
+
+/* Tablet (577px - 768px) */
+@media (min-width: 577px) and (max-width: 768px) {
+  .small-box h3 { font-size: 1.8rem; }
+  .table td, .table th { padding: 8px !important; font-size: 13px; }
+  .content { padding: 0 10px 10px !important; }
+}

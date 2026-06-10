@@ -1,0 +1,74 @@
+<%- include('../partials/header') %>
+
+<div class="row">
+  <div class="col-md-5">
+    <div class="card card-outline card-info">
+      <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-tshirt mr-2"></i>Info Produk</h3>
+      </div>
+      <div class="card-body">
+        <dl class="row">
+          <dt class="col-5">Nama Produk</dt>
+          <dd class="col-7"><strong><%= produk.nama_produk %></strong></dd>
+          <dt class="col-5">Deskripsi</dt>
+          <dd class="col-7"><%= produk.deskripsi || '-' %></dd>
+          <dt class="col-5">Harga Jual</dt>
+          <dd class="col-7 text-success font-weight-bold">Rp <%= Number(produk.harga_jual).toLocaleString('id-ID') %></dd>
+        </dl>
+        <hr>
+        <div class="text-center">
+          <div class="h2 text-success font-weight-bold"><%= stok %> pcs</div>
+          <div class="text-muted">Stok Produk Jadi</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card card-outline card-primary">
+      <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-cogs mr-2"></i>Progress Produksi</h3>
+      </div>
+      <div class="card-body">
+        <% const tahapUrut = ['Potong','Jahit','Obras','Sablon','QC','Packing']; %>
+        <% tahapUrut.forEach(tahap => { %>
+          <% const found = progress.find(p => p.proses === tahap); %>
+          <% const jml = found ? found.total_pcs : 0; %>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <span class="badge badge-<%= tahap==='Packing'?'success':tahap==='QC'?'info':'secondary' %> mr-2">
+                <%= tahap %>
+              </span>
+            </div>
+            <div class="flex-grow-1 mx-3">
+              <div class="progress" style="height:20px">
+                <div class="progress-bar bg-<%= tahap==='Packing'?'success':tahap==='QC'?'info':'primary' %>"
+                     style="width:<%= jml > 0 ? Math.min(100, jml) : 0 %>%">
+                </div>
+              </div>
+            </div>
+            <div class="font-weight-bold" style="min-width:70px;text-align:right">
+              <%= jml %> pcs
+            </div>
+          </div>
+        <% }) %>
+
+        <% if (!progress.length) { %>
+          <div class="text-center text-muted py-3">
+            <i class="fas fa-info-circle mr-1"></i>Belum ada data produksi
+          </div>
+        <% } %>
+      </div>
+      <div class="card-footer">
+        <a href="/penggajian/create" class="btn btn-primary btn-sm">
+          <i class="fas fa-plus mr-1"></i>Input Produksi
+        </a>
+        <a href="/produk" class="btn btn-secondary btn-sm ml-2">
+          <i class="fas fa-arrow-left mr-1"></i>Kembali
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,140 @@
+<%- include('../partials/header') %>
+
+<!-- Stats: 3 kolom di HP -->
+<div class="row">
+  <div class="col-4">
+    <div class="card text-center p-2 mb-3" style="border-left:4px solid #28a745">
+      <div style="font-size:11px;color:#6c757d">Stok Jadi</div>
+      <div style="font-size:1.3rem;font-weight:700;color:#28a745"><%= Number(totalStok).toLocaleString('id-ID') %></div>
+      <div style="font-size:10px;color:#6c757d">pcs</div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card text-center p-2 mb-3" style="border-left:4px solid #007bff">
+      <div style="font-size:11px;color:#6c757d">Nilai Stok</div>
+      <div style="font-size:0.85rem;font-weight:700;color:#007bff">Rp <%= Number(totalNilai).toLocaleString('id-ID') %></div>
+      <div style="font-size:10px;color:#6c757d">&nbsp;</div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card text-center p-2 mb-3" style="border-left:4px solid #ffc107">
+      <div style="font-size:11px;color:#6c757d">Produk</div>
+      <div style="font-size:1.3rem;font-weight:700;color:#ffc107"><%= inventaris.length %></div>
+      <div style="font-size:10px;color:#6c757d">jenis</div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-outline card-success">
+  <div class="card-header">
+    <h3 class="card-title"><i class="fas fa-warehouse mr-1"></i>Inventaris Produk Jadi</h3>
+    <div class="card-tools">
+      <small class="text-muted d-none d-md-inline"><i class="fas fa-info-circle"></i> Stok otomatis bertambah saat Packing</small>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <!-- Tampilan MOBILE: card per produk -->
+    <div class="d-md-none p-2">
+      <% inventaris.forEach((inv) => { %>
+      <div class="card mb-2" style="border-left:4px solid <%= inv.stok_jadi > 0 ? '#28a745' : '#6c757d' %>">
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="font-weight-bold"><i class="fas fa-tshirt mr-1 text-success"></i><%= inv.nama_produk %></div>
+              <div class="mt-1">
+                <span class="badge badge-<%= inv.stok_jadi > 0 ? 'success' : 'secondary' %> mr-2">
+                  <%= inv.stok_jadi %> pcs
+                </span>
+                <small class="text-muted">Rp <%= Number(inv.harga_jual).toLocaleString('id-ID') %>/pcs</small>
+              </div>
+              <div class="mt-1 font-weight-bold text-primary" style="font-size:13px">
+                Nilai: Rp <%= Number(inv.nilai_stok).toLocaleString('id-ID') %>
+              </div>
+            </div>
+            <button class="btn btn-warning btn-sm" onclick="koreksiStok(<%= inv.produk_id %>, '<%= inv.nama_produk %>', <%= inv.stok_jadi %>)">
+              <i class="fas fa-edit"></i> Koreksi
+            </button>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+      <% if (!inventaris.length) { %>
+        <div class="text-center text-muted py-3">Belum ada data inventaris</div>
+      <% } %>
+    </div>
+
+    <!-- Tampilan DESKTOP: tabel biasa -->
+    <div class="d-none d-md-block">
+      <table id="tabelInv" class="table table-bordered table-hover mb-0">
+        <thead class="thead-dark">
+          <tr>
+            <th>#</th>
+            <th>Produk</th>
+            <th>Stok Jadi</th>
+            <th>Harga Jual</th>
+            <th>Nilai Stok</th>
+            <th>Koreksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% inventaris.forEach((inv, i) => { %>
+          <tr>
+            <td><%= i+1 %></td>
+            <td><i class="fas fa-tshirt mr-1 text-success"></i><strong><%= inv.nama_produk %></strong></td>
+            <td>
+              <span class="badge badge-<%= inv.stok_jadi > 0 ? 'success' : 'secondary' %>" style="font-size:0.9rem;padding:5px 10px">
+                <%= inv.stok_jadi %> pcs
+              </span>
+            </td>
+            <td>Rp <%= Number(inv.harga_jual).toLocaleString('id-ID') %></td>
+            <td class="font-weight-bold text-primary">Rp <%= Number(inv.nilai_stok).toLocaleString('id-ID') %></td>
+            <td>
+              <button class="btn btn-warning btn-sm" onclick="koreksiStok(<%= inv.produk_id %>, '<%= inv.nama_produk %>', <%= inv.stok_jadi %>)">
+                <i class="fas fa-edit"></i> Koreksi
+              </button>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Koreksi -->
+<div class="modal fade" id="modalKoreksi" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title"><i class="fas fa-edit mr-2"></i>Koreksi Stok</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <form action="/inventaris/koreksi" method="POST">
+        <div class="modal-body">
+          <input type="hidden" name="produk_id" id="koreksiProdukId">
+          <div class="form-group">
+            <label id="labelProduk" class="font-weight-bold"></label>
+            <input type="number" name="stok_baru" id="stokBaru" class="form-control" min="0" required>
+            <small class="text-muted">Masukkan jumlah stok yang benar</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-warning">Simpan</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function koreksiStok(id, nama, stokSaat) {
+  document.getElementById('koreksiProdukId').value = id;
+  document.getElementById('labelProduk').textContent = nama;
+  document.getElementById('stokBaru').value = stokSaat;
+  $('#modalKoreksi').modal('show');
+}
+$(document).ready(function(){ $('#tabelInv').DataTable({ pageLength: 25 }); });
+</script>
+
+<%- include('../partials/footer') %>

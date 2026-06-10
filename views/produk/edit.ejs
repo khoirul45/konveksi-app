@@ -1,0 +1,32 @@
+<%- include('../partials/header') %>
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card card-warning card-outline">
+      <div class="card-header"><h3 class="card-title"><i class="fas fa-edit mr-2"></i>Edit Produk</h3></div>
+      <form action="/produk/<%= produk.id %>?_method=PUT" method="POST">
+        <div class="card-body">
+          <div class="form-group">
+            <label>Nama Produk <span class="text-danger">*</span></label>
+            <input type="text" name="nama_produk" class="form-control" value="<%= produk.nama_produk %>" required>
+          </div>
+          <div class="form-group">
+            <label>Deskripsi</label>
+            <textarea name="deskripsi" class="form-control" rows="2"><%= produk.deskripsi || '' %></textarea>
+          </div>
+          <div class="form-group">
+            <label>Harga Jual (Rp)</label>
+            <div class="input-group">
+              <div class="input-group-prepend"><span class="input-group-text">Rp</span></div>
+              <input type="number" name="harga_jual" class="form-control" value="<%= produk.harga_jual %>" min="0">
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-warning"><i class="fas fa-save mr-1"></i>Update</button>
+          <a href="/produk" class="btn btn-secondary ml-2"><i class="fas fa-arrow-left mr-1"></i>Kembali</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

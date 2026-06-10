@@ -1,0 +1,137 @@
+      </div><!-- /.container-fluid -->
+    </div><!-- /.content -->
+  </div><!-- /.content-wrapper -->
+
+  <footer class="main-footer">
+    <strong>&copy; <span id="tahun-footer"></span> Konveksi App.</strong> Sistem Manajemen Konveksi.
+    <script>document.getElementById('tahun-footer').textContent = new Date().getFullYear();</script>
+    <div class="float-right d-none d-sm-inline-block">
+      <b>Version</b> 1.0.0
+    </div>
+  </footer>
+
+</div><!-- ./wrapper -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="/js/main.js"></script>
+
+<!-- Dark Mode Global Script -->
+<script>
+const _html = document.documentElement;
+const _themeIcon = document.getElementById('theme-icon');
+
+function applyTheme(theme) {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDark = theme === 'dark' || (theme === 'auto' && prefersDark);
+  _html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  if (_themeIcon) _themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+  // AdminLTE body class
+  if (isDark) document.body.classList.add('dark-mode');
+  else document.body.classList.remove('dark-mode');
+}
+
+function toggleTheme(e) {
+  if (e) e.preventDefault();
+  const current = localStorage.getItem('theme') || 'auto';
+  const next = current === 'auto' ? 'dark' : current === 'dark' ? 'light' : 'auto';
+  localStorage.setItem('theme', next);
+  applyTheme(next);
+  // Tooltip feedback
+  const btn = document.getElementById('navbar-theme-btn');
+  if (btn) {
+    const label = next === 'dark' ? 'Mode Gelap' : next === 'light' ? 'Mode Terang' : 'Otomatis (Sistem)';
+    btn.title = label;
+  }
+}
+
+// Terapkan tema saat halaman load
+applyTheme(localStorage.getItem('theme') || 'auto');
+
+// Ikuti perubahan tema sistem
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (!localStorage.getItem('theme') || localStorage.getItem('theme') === 'auto') applyTheme('auto');
+});
+
+// Animasi masuk halaman
+document.querySelector('.content-wrapper') && document.querySelector('.content-wrapper').classList.add('page-transition');
+</script>
+
+<!-- PWA Install Button -->
+<div id="pwa-install-bar" style="display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999;
+  background: linear-gradient(135deg, #3c8dbc, #2a6496); color:white;
+  padding: 12px 20px; box-shadow: 0 -3px 15px rgba(0,0,0,0.2);">
+  <div style="display:flex; align-items:center; justify-content:space-between; max-width:600px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <img src="/icons/icon-72x72.png" width="40" height="40" style="border-radius:8px" alt="Konveksi App icon">
+      <div>
+        <div style="font-weight:600; font-size:14px">Install Konveksi App</div>
+        <div style="font-size:12px; opacity:0.85">Tambahkan ke layar utama HP kamu</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button id="pwa-install-btn" style="background:white; color:#2a6496; border:none;
+        padding: 8px 18px; border-radius:20px; font-weight:600; font-size:13px; cursor:pointer;">
+        Install
+      </button>
+      <button id="pwa-dismiss-btn" style="background:rgba(255,255,255,0.2); color:white; border:none;
+        padding: 8px 12px; border-radius:20px; font-size:13px; cursor:pointer;">
+        ✕
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
+      .catch(err => console.log('[PWA] Service Worker error:', err));
+  });
+}
+
+// Tampilkan tombol install
+let deferredPrompt;
+const installBar = document.getElementById('pwa-install-bar');
+const installBtn = document.getElementById('pwa-install-btn');
+const dismissBtn = document.getElementById('pwa-dismiss-btn');
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Tampilkan bar install setelah 3 detik
+  setTimeout(() => {
+    if (!localStorage.getItem('pwa-dismissed')) {
+      installBar.style.display = 'block';
+    }
+  }, 3000);
+});
+
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log('[PWA] Install outcome:', outcome);
+  deferredPrompt = null;
+  installBar.style.display = 'none';
+});
+
+dismissBtn.addEventListener('click', () => {
+  installBar.style.display = 'none';
+  localStorage.setItem('pwa-dismissed', '1');
+});
+
+// Kalau sudah diinstall, sembunyikan bar
+window.addEventListener('appinstalled', () => {
+  installBar.style.display = 'none';
+  console.log('[PWA] App installed!');
+});
+</script>
+</body>
+</html>

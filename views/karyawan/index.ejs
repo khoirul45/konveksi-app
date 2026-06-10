@@ -1,0 +1,106 @@
+<%- include('../partials/header') %>
+
+<div class="card card-outline card-primary">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <h3 class="card-title mb-0"><i class="fas fa-users mr-1"></i>Daftar Karyawan</h3>
+    <a href="/karyawan/create" class="btn btn-primary btn-sm">
+      <i class="fas fa-plus"></i> <span class="d-none d-sm-inline">Tambah Karyawan</span>
+    </a>
+  </div>
+  <div class="card-body p-0">
+
+    <!-- MOBILE: card per karyawan -->
+    <div class="d-md-none p-2">
+      <% karyawan.forEach(k => { %>
+      <div class="card mb-2" style="border-left:4px solid <%= k.status==='aktif'?'#28a745':'#dc3545' %>">
+        <div class="card-body p-3">
+          <div class="d-flex align-items-center">
+            <img src="/uploads/karyawan/<%= k.foto %>" alt="foto <%= k.nama %>"
+                 class="img-circle mr-3" width="50" height="50"
+                 style="object-fit:cover;flex-shrink:0"
+                 onerror="this.src='/uploads/karyawan/default.png'">
+            <div style="flex:1;min-width:0">
+              <div class="font-weight-bold"><%= k.nama %></div>
+              <div style="font-size:12px;color:#6c757d">
+                <i class="fas fa-briefcase mr-1"></i><%= k.jabatan || '-' %>
+                &nbsp;·&nbsp;
+                <i class="fas fa-phone mr-1"></i><%= k.no_hp || '-' %>
+              </div>
+              <div class="mt-1">
+                <span class="badge badge-<%= k.status==='aktif'?'success':'danger' %>"><%= k.status %></span>
+              </div>
+            </div>
+            <div class="d-flex flex-column ml-2" style="gap:4px">
+              <a href="/karyawan/<%= k.id %>/edit" class="btn btn-warning btn-sm mb-1">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form action="/karyawan/<%= k.id %>?_method=DELETE" method="POST"
+                    onsubmit="return confirm('Hapus <%= k.nama %>?')">
+                <button type="submit" class="btn btn-danger btn-sm">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+      <% if (!karyawan.length) { %>
+        <div class="text-center text-muted py-3">Belum ada karyawan</div>
+      <% } %>
+    </div>
+
+    <!-- DESKTOP: tabel -->
+    <div class="d-none d-md-block">
+      <table id="tabelKaryawan" class="table table-bordered table-hover table-striped mb-0">
+        <thead class="thead-dark">
+          <tr>
+            <th width="60">Foto</th>
+            <th>Nama</th>
+            <th>Jabatan</th>
+            <th>No. HP</th>
+            <th>Status</th>
+            <th width="130">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% karyawan.forEach(k => { %>
+          <tr>
+            <td class="text-center">
+              <img src="/uploads/karyawan/<%= k.foto %>" alt="foto <%= k.nama %>"
+                   class="img-circle" width="40" height="40"
+                   style="object-fit:cover"
+                   onerror="this.src='/uploads/karyawan/default.png'">
+            </td>
+            <td><strong><%= k.nama %></strong></td>
+            <td><%= k.jabatan %></td>
+            <td><%= k.no_hp || '-' %></td>
+            <td>
+              <span class="badge badge-<%= k.status==='aktif'?'success':'danger' %>"><%= k.status %></span>
+            </td>
+            <td>
+              <a href="/karyawan/<%= k.id %>/edit" class="btn btn-warning btn-xs">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form action="/karyawan/<%= k.id %>?_method=DELETE" method="POST" class="d-inline"
+                    onsubmit="return confirm('Hapus karyawan <%= k.nama %>?')">
+                <button type="submit" class="btn btn-danger btn-xs">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+$(document).ready(function(){
+  $('#tabelKaryawan').DataTable({ language: {}, order: [[1,'asc']] });
+});
+</script>
+<%- include('../partials/footer') %>

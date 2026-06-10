@@ -1,0 +1,89 @@
+<%- include('../partials/header') %>
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card card-warning card-outline">
+      <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-user-edit mr-2"></i>Edit Karyawan</h3>
+      </div>
+      <form action="/karyawan/<%= karyawan.id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="foto_lama" value="<%= karyawan.foto %>">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Nama Lengkap <span class="text-danger">*</span></label>
+                <input type="text" name="nama" class="form-control" value="<%= karyawan.nama %>" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Jabatan</label>
+                <select name="jabatan" class="form-control">
+                  <% ['Penjahit','Obras','Sablon','Packing','QC','Potong','Lainnya'].forEach(j => { %>
+                    <option value="<%= j %>" <%= karyawan.jabatan===j?'selected':'' %>><%= j %></option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>No. HP</label>
+                <input type="text" name="no_hp" class="form-control" value="<%= karyawan.no_hp || '' %>">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Status</label>
+                <select name="status" class="form-control">
+                  <option value="aktif" <%= karyawan.status==='aktif'?'selected':'' %>>Aktif</option>
+                  <option value="nonaktif" <%= karyawan.status==='nonaktif'?'selected':'' %>>Non-Aktif</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Alamat</label>
+                <textarea name="alamat" class="form-control" rows="2"><%= karyawan.alamat || '' %></textarea>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Foto Karyawan</label>
+                <div class="mb-2">
+                  <img src="/uploads/karyawan/<%= karyawan.foto %>" width="80" class="img-thumbnail"
+                       onerror="this.src='/uploads/karyawan/default.png'" id="preview">
+                </div>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" name="foto" accept="image/*"
+                         onchange="previewFoto(this)">
+                  <label class="custom-file-label">Ganti foto (opsional)</label>
+                </div>
+                <small class="text-muted">Biarkan kosong jika tidak ingin mengganti foto</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-warning"><i class="fas fa-save mr-1"></i>Update</button>
+          <a href="/karyawan" class="btn btn-secondary ml-2"><i class="fas fa-arrow-left mr-1"></i>Kembali</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function previewFoto(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('preview').src = e.target.result;
+      input.nextElementSibling.textContent = input.files[0].name;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+
+<%- include('../partials/footer') %>

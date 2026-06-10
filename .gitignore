@@ -1,0 +1,9 @@
+node_modules/
+.env
+public/uploads/karyawan/*.jpg
+public/uploads/karyawan/*.jpeg
+public/uploads/karyawan/*.png
+!public/uploads/karyawan/default.png
+*.log
+.DS_Store
+Thumbs.db

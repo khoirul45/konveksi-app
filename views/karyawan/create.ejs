@@ -1,0 +1,94 @@
+<%- include('../partials/header') %>
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card card-primary card-outline">
+      <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-user-plus mr-2"></i>Tambah Karyawan</h3>
+      </div>
+      <form action="/karyawan" method="POST" enctype="multipart/form-data">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Nama Lengkap <span class="text-danger">*</span></label>
+                <input type="text" name="nama" class="form-control" placeholder="Masukkan nama lengkap" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Jabatan</label>
+                <select name="jabatan" class="form-control">
+                  <option value="">-- Pilih Jabatan --</option>
+                  <option>Penjahit</option>
+                  <option>Obras</option>
+                  <option>Sablon</option>
+                  <option>Packing</option>
+                  <option>QC</option>
+                  <option>Potong</option>
+                  <option>Lainnya</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>No. HP</label>
+                <input type="text" name="no_hp" class="form-control" placeholder="08xxxxxxxxxx">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Status</label>
+                <select name="status" class="form-control">
+                  <option value="aktif">Aktif</option>
+                  <option value="nonaktif">Non-Aktif</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Alamat</label>
+                <textarea name="alamat" class="form-control" rows="2" placeholder="Alamat lengkap"></textarea>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Foto Karyawan</label>
+                <div class="input-group">
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="foto" name="foto" accept="image/*"
+                           onchange="previewFoto(this)">
+                    <label class="custom-file-label" for="foto">Pilih foto...</label>
+                  </div>
+                </div>
+                <small class="text-muted">Maksimal 2MB. Format: JPG, PNG</small>
+                <div class="mt-2">
+                  <img id="preview" src="#" class="img-thumbnail d-none" width="100">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>Simpan</button>
+          <a href="/karyawan" class="btn btn-secondary ml-2"><i class="fas fa-arrow-left mr-1"></i>Kembali</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function previewFoto(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      $('#preview').attr('src', e.target.result).removeClass('d-none');
+      $('.custom-file-label').text(input.files[0].name);
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+
+<%- include('../partials/footer') %>

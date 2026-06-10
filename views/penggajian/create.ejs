@@ -1,0 +1,154 @@
+<%- include('../partials/header') %>
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card card-primary card-outline">
+      <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-plus-circle mr-2"></i>Input Penggajian & Produksi</h3>
+      </div>
+      <form action="/penggajian" method="POST" id="formGaji">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Karyawan <span class="text-danger">*</span></label>
+                <select name="karyawan_id" class="form-control" required>
+                  <option value="">-- Pilih Karyawan --</option>
+                  <% karyawan.forEach(k => { %>
+                    <option value="<%= k.id %>"><%= k.nama %> (<%= k.jabatan %>)</option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Produk <span class="text-danger">*</span></label>
+                <select name="produk_id" class="form-control" required>
+                  <option value="">-- Pilih Produk --</option>
+                  <% produk.forEach(p => { %>
+                    <option value="<%= p.id %>"><%= p.nama_produk %></option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Tahap Proses <span class="text-danger">*</span></label>
+                <select name="proses" class="form-control" id="selectProses" required onchange="loadTarif(this.value)">
+                  <option value="">-- Pilih Tahap --</option>
+                  <% ['Potong','Jahit','Obras','Sablon','QC','Packing'].forEach(p => { %>
+                    <option value="<%= p %>"><%= p %></option>
+                  <% }) %>
+                </select>
+                <% if (typeof proses !== 'undefined' && proses === 'Packing') { %>
+                  <small class="text-success"><i class="fas fa-info-circle"></i> Packing = stok otomatis bertambah</small>
+                <% } %>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Tanggal <span class="text-danger">*</span></label>
+                <input type="date" name="tanggal" class="form-control"
+                      value="<%= new Date().toISOString().split('T')[0] %>" required>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Jumlah (pcs) <span class="text-danger">*</span></label>
+                <input type="number" name="jumlah" id="jumlah" class="form-control"
+                      placeholder="0" min="1" required onchange="hitungTotal()">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Upah per pcs (Rp) <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <div class="input-group-prepend"><span class="input-group-text">Rp</span></div>
+                  <input type="number" name="upah_per_pcs" id="upah_per_pcs" class="form-control"
+                        placeholder="0" min="0" required onchange="hitungTotal()">
+                </div>
+                <small class="text-muted">Tarif default otomatis terisi saat pilih proses</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Total Gaji</label>
+                <div class="input-group">
+                  <div class="input-group-prepend"><span class="input-group-text">Rp</span></div>
+                  <input type="text" id="total_preview" class="form-control font-weight-bold text-success"
+                        value="0" readonly style="background:#f8fff8">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Keterangan</label>
+                <input type="text" name="keterangan" class="form-control" placeholder="Opsional">
+              </div>
+            </div>
+          </div>
+
+          <!-- Info Packing -->
+          <div id="infoPacking" class="alert alert-success d-none">
+            <i class="fas fa-boxes mr-2"></i>
+            <strong>Perhatian:</strong> Tahap <strong>Packing</strong> akan otomatis menambah stok inventaris produk jadi.
+          </div>
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-save mr-2"></i>Simpan Penggajian
+          </button>
+          <a href="/penggajian" class="btn btn-secondary ml-2"><i class="fas fa-arrow-left mr-1"></i>Kembali</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabel Tarif Referensi -->
+    <div class="card card-outline card-info">
+      <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-tags mr-2"></i>Tarif Proses (Referensi)</h3>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm table-bordered mb-0">
+          <thead class="thead-light">
+            <tr><th>Proses</th><th>Upah/pcs</th></tr>
+          </thead>
+          <tbody>
+            <% tarif.forEach(t => { %>
+            <tr>
+              <td><%= t.proses %></td>
+              <td class="font-weight-bold">Rp <%= Number(t.upah_per_pcs).toLocaleString('id-ID') %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const tarifMap = {};
+<% tarif.forEach(t => { %>
+  tarifMap['<%= t.proses %>'] = <%= t.upah_per_pcs %>;
+<% }) %>
+
+function loadTarif(proses) {
+  const upah = tarifMap[proses] || 0;
+  document.getElementById('upah_per_pcs').value = upah;
+  hitungTotal();
+  // Info packing
+  const infoPacking = document.getElementById('infoPacking');
+  if (proses === 'Packing') infoPacking.classList.remove('d-none');
+  else infoPacking.classList.add('d-none');
+}
+
+function hitungTotal() {
+  const jumlah = parseFloat(document.getElementById('jumlah').value) || 0;
+  const upah = parseFloat(document.getElementById('upah_per_pcs').value) || 0;
+  const total = jumlah * upah;
+  document.getElementById('total_preview').value = total.toLocaleString('id-ID');
+}
+</script>
+
+<%- include('../partials/footer') %>

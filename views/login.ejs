@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="auto">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Konveksi App</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#3c8dbc">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ===== VARIABEL TEMA ===== */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      --card-bg: #ffffff;
+      --card-text: #333333;
+      --input-bg: #f8f9fa;
+      --input-border: #dee2e6;
+      --input-text: #333333;
+      --muted: #6c757d;
+      --shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    [data-theme="dark"] {
+      --bg-gradient: linear-gradient(135deg, #0d0d0d 0%, #1a1a2e 50%, #0f1923 100%);
+      --card-bg: #1e2a38;
+      --card-text: #e0e0e0;
+      --input-bg: #2c3e50;
+      --input-border: #3d5166;
+      --input-text: #e0e0e0;
+      --muted: #adb5bd;
+      --shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+
+    * { transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+
+    body {
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+
+    /* ===== LOADING OVERLAY ===== */
+    #page-loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, #1a1a2e, #0f3460);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity 0.5s;
+    }
+    #page-loader .loader-icon { font-size: 3rem; color: #3c8dbc; animation: spin 1s linear infinite; }
+    #page-loader p { color: #aaa; margin-top: 12px; font-size: 14px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== TOMBOL TEMA ===== */
+    #theme-toggle {
+      position: fixed; top: 16px; right: 16px;
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1);
+      color: white; font-size: 18px; cursor: pointer;
+      backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s;
+    }
+    #theme-toggle:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
+
+    /* ===== LOGIN BOX ===== */
+    .login-wrapper { width: 100%; max-width: 420px; padding: 20px; animation: fadeUp 0.6s ease; }
+    @keyframes fadeUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+
+    .login-logo { text-align: center; margin-bottom: 1.5rem; }
+    .login-logo a {
+      color: #fff; font-size: 2rem; font-weight: 700;
+      text-decoration: none; display: flex; align-items: center;
+      justify-content: center; gap: 10px;
+    }
+    .login-logo .logo-icon {
+      width: 50px; height: 50px; border-radius: 12px;
+      background: linear-gradient(135deg, #3c8dbc, #2a6496);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; box-shadow: 0 4px 15px rgba(60,141,188,0.4);
+    }
+    .login-logo small { display: block; color: rgba(255,255,255,0.6); font-size: 0.85rem; font-weight: 400; margin-top: 4px; }
+
+    .card { background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow); border: none; overflow: hidden; }
+    .card-body { padding: 2rem; }
+    .card-title { color: var(--card-text); font-size: 1.3rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .card-subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    /* ===== INPUT ===== */
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 5px; display: block; }
+
+    .input-group {
+      display: flex; align-items: center;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 10px; overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-group:focus-within {
+      border-color: #3c8dbc;
+      box-shadow: 0 0 0 3px rgba(60,141,188,0.15);
+    }
+    .input-group .icon { padding: 0 12px; color: var(--muted); font-size: 15px; }
+    .input-group input {
+      flex: 1; border: none; background: transparent;
+      padding: 11px 8px; font-size: 14px; color: var(--input-text);
+      outline: none;
+    }
+    .input-group input::placeholder { color: var(--muted); }
+    .input-group .toggle-pw {
+      padding: 0 14px; color: var(--muted); cursor: pointer;
+      font-size: 15px; background: transparent; border: none;
+      transition: color 0.2s; outline: none; box-shadow: none;
+    }
+    .input-group .toggle-pw:hover { color: #3c8dbc; }
+    .input-group .toggle-pw:focus { outline: none; box-shadow: none; }
+    .input-group .toggle-pw:active { outline: none; }
+
+    /* ===== SEMBUNYIKAN IKON MATA BAWAAN BROWSER ===== */
+    input[type="password"]::-ms-reveal,
+    input[type="password"]::-ms-clear { display: none !important; }
+    input[type="password"]::-webkit-credentials-auto-fill-button,
+    input[type="password"]::-webkit-textfield-decoration-container { display: none !important; }
+    input[type="password"] { -webkit-appearance: none; }
+
+    /* ===== REMEMBER ME ===== */
+    .remember-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .remember-label {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 13px; color: var(--muted); cursor: pointer;
+    }
+    .remember-label input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: #3c8dbc; }
+
+    /* ===== TOMBOL LOGIN ===== */
+    .btn-login {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, #3c8dbc 0%, #2a6496 100%);
+      color: white; border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(60,141,188,0.4); }
+    .btn-login:active { transform: translateY(0); }
+    .btn-login.loading { opacity: 0.8; pointer-events: none; }
+
+    /* ===== ALERT ERROR ===== */
+    .alert-error {
+      background: #fff3f3; border: 1px solid #ffcdd2;
+      color: #c62828; border-radius: 8px; padding: 10px 14px;
+      font-size: 13px; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    [data-theme="dark"] .alert-error { background: #3b1f1f; border-color: #7f2020; color: #ff8a80; }
+
+    /* ===== INFO AKUN ===== */
+    .accounts-info {
+      margin-top: 1.25rem;
+      border-top: 1px solid var(--input-border);
+      padding-top: 1rem;
+    }
+    .accounts-info p { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 8px; }
+    .account-badges { display: flex; gap: 8px; justify-content: center; }
+    .account-badge {
+      background: var(--input-bg); border: 1px solid var(--input-border);
+      border-radius: 8px; padding: 6px 12px; font-size: 12px; color: var(--muted);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .account-badge:hover { border-color: #3c8dbc; color: #3c8dbc; background: rgba(60,141,188,0.08); }
+    .account-badge strong { color: var(--card-text); }
+  </style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="page-loader">
+  <i class="fas fa-tshirt loader-icon"></i>
+  <p>Memuat Konveksi App...</p>
+</div>
+
+<!-- Tombol tema -->
+<button id="theme-toggle" title="Ganti tema" onclick="toggleTheme()">
+  <i class="fas fa-moon" id="theme-icon"></i>
+</button>
+
+<div class="login-wrapper">
+  <div class="login-logo">
+    <a href="#">
+      <div class="logo-icon"><i class="fas fa-tshirt"></i></div>
+      <div>
+        <span><b>Konveksi</b>App</span>
+        <small>Sistem Manajemen Konveksi</small>
+      </div>
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title">Selamat Datang 👋</div>
+      <div class="card-subtitle">Masuk ke sistem manajemen konveksi</div>
+
+      <% if (error && error.length > 0) { %>
+        <div class="alert-error">
+          <i class="fas fa-exclamation-circle"></i> <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/login" method="POST" id="loginForm">
+        <div class="form-group">
+          <label>Username</label>
+          <div class="input-group">
+            <span class="icon"><i class="fas fa-user"></i></span>
+            <input type="text" name="username" id="username"
+                   placeholder="Masukkan username" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-group">
+            <span class="icon"><i class="fas fa-lock"></i></span>
+            <input type="password" name="password" id="password"
+                   placeholder="Masukkan password" required autocomplete="current-password">
+            <button type="button" class="toggle-pw" onclick="togglePassword()" title="Tampilkan/sembunyikan password">
+              <i class="fas fa-eye" id="pw-icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="remember-row">
+          <label class="remember-label">
+            <input type="checkbox" id="remember" name="remember">
+            Ingat username
+          </label>
+        </div>
+
+        <button type="submit" class="btn-login" id="btnLogin">
+          <i class="fas fa-sign-in-alt"></i> Masuk
+        </button>
+      </form>
+
+      <div class="accounts-info">
+        <p><i class="fas fa-info-circle"></i> Klik untuk isi otomatis</p>
+        <div class="account-badges">
+          <div class="account-badge" onclick="fillLogin('admin')">
+            <strong>Admin</strong> · admin
+          </div>
+          <div class="account-badge" onclick="fillLogin('owner')">
+            <strong>Owner</strong> · owner
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== LOADING =====
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const loader = document.getElementById('page-loader');
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 500);
+  }, 800);
+});
+
+// ===== DARK MODE =====
+const html = document.documentElement;
+const themeIcon = document.getElementById('theme-icon');
+
+function applyTheme(theme) {
+  if (theme === 'auto') {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    html.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+    themeIcon.className = prefersDark ? 'fas fa-sun' : 'fas fa-moon';
+  } else {
+    html.setAttribute('data-theme', theme);
+    themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+  }
+}
+
+function toggleTheme() {
+  const current = localStorage.getItem('theme') || 'auto';
+  const next = current === 'auto' ? 'dark' : current === 'dark' ? 'light' : 'auto';
+  localStorage.setItem('theme', next);
+  applyTheme(next);
+}
+
+applyTheme(localStorage.getItem('theme') || 'auto');
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (!localStorage.getItem('theme') || localStorage.getItem('theme') === 'auto') applyTheme('auto');
+});
+
+// ===== TOGGLE PASSWORD =====
+function togglePassword() {
+  const input = document.getElementById('password');
+  const icon = document.getElementById('pw-icon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'fas fa-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'fas fa-eye';
+  }
+}
+
+// ===== REMEMBER USERNAME =====
+const usernameInput = document.getElementById('username');
+const rememberCheck = document.getElementById('remember');
+const saved = localStorage.getItem('remember_username');
+if (saved) { usernameInput.value = saved; rememberCheck.checked = true; }
+
+document.getElementById('loginForm').addEventListener('submit', function() {
+  if (rememberCheck.checked) localStorage.setItem('remember_username', usernameInput.value);
+  else localStorage.removeItem('remember_username');
+  const btn = document.getElementById('btnLogin');
+  btn.classList.add('loading');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+});
+
+// ===== FILL LOGIN SHORTCUT =====
+function fillLogin(role) {
+  document.getElementById('username').value = role;
+  document.getElementById('password').value = '';
+  document.getElementById('password').focus();
+}
+</script>
+</body>
+</html>

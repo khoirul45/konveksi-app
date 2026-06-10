@@ -1,0 +1,234 @@
+<%- include('../partials/header') %>
+
+<!-- Filter — mobile friendly -->
+<div class="card card-outline card-secondary mb-3">
+  <div class="card-body py-2">
+    <form method="GET">
+      <div class="row">
+        <div class="col-12 mb-2">
+          <label class="font-weight-bold mb-1">Periode:</label>
+          <select name="bulan" class="form-control form-control-sm">
+            <% ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'].forEach((b,i) => { %>
+              <option value="<%= i+1 %>" <%= filter.bulan==i+1?'selected':'' %>><%= b %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-6 mb-2">
+          <input type="number" name="tahun" class="form-control form-control-sm"
+                 value="<%= filter.tahun %>">
+        </div>
+        <div class="col-6 mb-2">
+          <button type="submit" class="btn btn-sm btn-primary w-100">
+            <i class="fas fa-search"></i> Tampilkan
+          </button>
+        </div>
+        <div class="col-6 mb-1">
+          <a href="/laporan/pdf-gaji?bulan=<%= filter.bulan %>&tahun=<%= filter.tahun %>"
+             class="btn btn-sm btn-danger w-100" target="_blank">
+            <i class="fas fa-file-pdf"></i> PDF Gaji
+          </a>
+        </div>
+        <div class="col-6 mb-1">
+          <a href="/laporan/pdf-inventaris" class="btn btn-sm btn-success w-100" target="_blank">
+            <i class="fas fa-file-pdf"></i> PDF Inventaris
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Grafik — full width di mobile -->
+<div class="card card-outline card-primary mb-3">
+  <div class="card-header">
+    <h3 class="card-title" style="font-size:13px">
+      <i class="fas fa-chart-bar mr-1"></i>Grafik Gaji & Produksi 6 Bulan Terakhir
+    </h3>
+  </div>
+  <div class="card-body">
+    <canvas id="grafikBulanan" height="160"></canvas>
+  </div>
+</div>
+
+<!-- Total Gaji -->
+<div class="card bg-gradient-primary text-white mb-3">
+  <div class="card-body text-center py-3">
+    <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
+    <h3 class="font-weight-bold mb-0">Rp <%= Number(totalGajiBulanIni).toLocaleString('id-ID') %></h3>
+    <p class="mb-0" style="font-size:13px">Total Gaji Periode Ini</p>
+  </div>
+</div>
+
+<!-- Rekap singkat per karyawan -->
+<div class="card card-outline card-info mb-3">
+  <div class="card-header"><h3 class="card-title">Rekap Per Karyawan</h3></div>
+  <div class="card-body p-0">
+    <table class="table table-sm mb-0">
+      <% rekapGaji.slice(0,5).forEach(r => { %>
+      <tr>
+        <td><i class="fas fa-user mr-1 text-primary"></i><%= r.nama %></td>
+        <td class="text-right font-weight-bold text-success" style="white-space:nowrap">
+          Rp <%= Number(r.total).toLocaleString('id-ID') %>
+        </td>
+      </tr>
+      <% }) %>
+      <% if (!rekapGaji.length) { %>
+      <tr><td colspan="2" class="text-center text-muted py-2">Tidak ada data</td></tr>
+      <% } %>
+    </table>
+  </div>
+</div>
+
+<!-- Rekap Gaji Per Karyawan detail -->
+<div class="card card-outline card-primary mb-3">
+  <div class="card-header">
+    <h3 class="card-title"><i class="fas fa-users mr-1"></i>Rekap Gaji Per Karyawan</h3>
+  </div>
+  <div class="card-body p-0">
+    <!-- Mobile: card -->
+    <div class="d-md-none p-2">
+      <% rekapGaji.forEach(r => { %>
+      <div class="d-flex justify-content-between align-items-center p-2 mb-1"
+           style="border-bottom:1px solid rgba(0,0,0,0.1)">
+        <div>
+          <div class="font-weight-bold" style="font-size:13px"><%= r.nama %></div>
+          <div style="font-size:11px;color:#6c757d">
+            <%= r.jumlah_transaksi %>x transaksi · <%= Number(r.total_pcs).toLocaleString('id-ID') %> pcs
+          </div>
+        </div>
+        <div class="font-weight-bold text-success" style="font-size:13px;white-space:nowrap">
+          Rp <%= Number(r.total).toLocaleString('id-ID') %>
+        </div>
+      </div>
+      <% }) %>
+      <% if (!rekapGaji.length) { %>
+        <div class="text-center text-muted py-2">Tidak ada data</div>
+      <% } %>
+    </div>
+    <!-- Desktop: tabel -->
+    <div class="d-none d-md-block">
+      <table class="table table-bordered table-sm mb-0">
+        <thead class="thead-light">
+          <tr><th>Karyawan</th><th>Transaksi</th><th>Total Pcs</th><th>Total Gaji</th></tr>
+        </thead>
+        <tbody>
+          <% rekapGaji.forEach(r => { %>
+          <tr>
+            <td><strong><%= r.nama %></strong></td>
+            <td><%= r.jumlah_transaksi %>x</td>
+            <td><%= Number(r.total_pcs).toLocaleString('id-ID') %> pcs</td>
+            <td class="font-weight-bold text-success">Rp <%= Number(r.total).toLocaleString('id-ID') %></td>
+          </tr>
+          <% }) %>
+          <% if (!rekapGaji.length) { %>
+          <tr><td colspan="4" class="text-center text-muted">Tidak ada data</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Rekap Produksi Per Produk -->
+<div class="card card-outline card-success mb-3">
+  <div class="card-header">
+    <h3 class="card-title"><i class="fas fa-cogs mr-1"></i>Rekap Produksi Per Produk</h3>
+  </div>
+  <div class="card-body p-0">
+    <!-- Mobile: card -->
+    <div class="d-md-none p-2">
+      <% rekapProduk.forEach(r => { %>
+      <div class="d-flex justify-content-between align-items-center p-2 mb-1"
+           style="border-bottom:1px solid rgba(0,0,0,0.1)">
+        <div>
+          <div class="font-weight-bold" style="font-size:13px"><%= r.nama_produk %></div>
+          <span class="badge badge-<%= r.proses==='Packing'?'success':r.proses==='QC'?'info':'secondary' %>">
+            <%= r.proses %>
+          </span>
+        </div>
+        <div class="font-weight-bold" style="font-size:13px;white-space:nowrap">
+          <%= Number(r.total_pcs).toLocaleString('id-ID') %> pcs
+        </div>
+      </div>
+      <% }) %>
+      <% if (!rekapProduk.length) { %>
+        <div class="text-center text-muted py-2">Tidak ada data</div>
+      <% } %>
+    </div>
+    <!-- Desktop: tabel -->
+    <div class="d-none d-md-block">
+      <table class="table table-bordered table-sm mb-0">
+        <thead class="thead-light">
+          <tr><th>Produk</th><th>Proses</th><th>Total Pcs</th></tr>
+        </thead>
+        <tbody>
+          <% rekapProduk.forEach(r => { %>
+          <tr>
+            <td><strong><%= r.nama_produk %></strong></td>
+            <td>
+              <span class="badge badge-<%= r.proses==='Packing'?'success':r.proses==='QC'?'info':'secondary' %>">
+                <%= r.proses %>
+              </span>
+            </td>
+            <td><%= Number(r.total_pcs).toLocaleString('id-ID') %> pcs</td>
+          </tr>
+          <% }) %>
+          <% if (!rekapProduk.length) { %>
+          <tr><td colspan="3" class="text-center text-muted">Tidak ada data</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('load', function() {
+  const grafikBulanan = <%- JSON.stringify(grafikBulanan) %>;
+  const ctx = document.getElementById('grafikBulanan').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: grafikBulanan.map(d => d.bulan_label),
+      datasets: [
+        {
+          label: 'Total Gaji (Rp)',
+          data: grafikBulanan.map(d => d.total_gaji),
+          backgroundColor: 'rgba(60,141,188,0.7)',
+          borderColor: '#3c8dbc',
+          borderWidth: 2,
+          borderRadius: 4,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Total Pcs',
+          data: grafikBulanan.map(d => d.total_pcs),
+          type: 'line',
+          borderColor: '#00a65a',
+          backgroundColor: 'rgba(0,166,90,0.1)',
+          borderWidth: 2,
+          fill: true,
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top', labels: { font: { size: 11 } } } },
+      scales: {
+        y: {
+          position: 'left',
+          ticks: { font: { size: 10 }, callback: v => 'Rp ' + Number(v).toLocaleString('id-ID') }
+        },
+        y1: {
+          position: 'right',
+          grid: { drawOnChartArea: false },
+          ticks: { font: { size: 10 }, callback: v => v + ' pcs' }
+        }
+      }
+    }
+  });
+});
+</script>
+
+<%- include('../partials/footer') %>
