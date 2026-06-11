@@ -69,7 +69,7 @@ app.get('/dashboard', async (req, res) => {
       ORDER BY p.created_at DESC LIMIT 8
     `);
     const [grafikData] = await db.query(`
-      SELECT DATE_FORMAT(tanggal,'%b %Y') as label, SUM(total_gaji) as total
+      SELECT DATE_FORMAT(MIN(tanggal),'%b %Y') as label, SUM(total_gaji) as total
       FROM penggajian WHERE tanggal >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
       GROUP BY DATE_FORMAT(tanggal,'%Y-%m') ORDER BY MIN(tanggal)
     `);
