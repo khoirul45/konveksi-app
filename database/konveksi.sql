@@ -1,17 +1,26 @@
+-- ============================================================
 -- Database: konveksi_db
+-- Sistem Manajemen Konveksi - Penggajian & Monitoring Produksi
+-- ============================================================
+
 CREATE DATABASE IF NOT EXISTS konveksi_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE konveksi_db;
 
--- Tabel users (login)
+-- ============================================================
+-- TABEL USERS (login)
+-- ============================================================
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'owner') DEFAULT 'admin',
+    role ENUM('admin','owner','karyawan') DEFAULT 'karyawan',
+    karyawan_id INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabel karyawan
+-- ============================================================
+-- TABEL KARYAWAN
+-- ============================================================
 CREATE TABLE IF NOT EXISTS karyawan (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nama VARCHAR(100) NOT NULL,
@@ -19,11 +28,17 @@ CREATE TABLE IF NOT EXISTS karyawan (
     no_hp VARCHAR(20),
     alamat TEXT,
     foto VARCHAR(255) DEFAULT 'default.png',
-    status ENUM('aktif', 'nonaktif') DEFAULT 'aktif',
+    status ENUM('aktif','nonaktif') DEFAULT 'aktif',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabel produk (master)
+-- Foreign key users -> karyawan (setelah tabel karyawan dibuat)
+ALTER TABLE users ADD CONSTRAINT fk_users_karyawan
+    FOREIGN KEY (karyawan_id) REFERENCES karyawan(id) ON DELETE SET NULL;
+
+-- ============================================================
+-- TABEL PRODUK
+-- ============================================================
 CREATE TABLE IF NOT EXISTS produk (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nama_produk VARCHAR(100) NOT NULL,
@@ -32,7 +47,9 @@ CREATE TABLE IF NOT EXISTS produk (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabel tarif proses (upah per pcs per tahap)
+-- ============================================================
+-- TABEL TARIF PROSES
+-- ============================================================
 CREATE TABLE IF NOT EXISTS tarif_proses (
     id INT AUTO_INCREMENT PRIMARY KEY,
     proses ENUM('Potong','Jahit','Obras','Sablon','QC','Packing') NOT NULL,
@@ -40,7 +57,9 @@ CREATE TABLE IF NOT EXISTS tarif_proses (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Tabel penggajian (sekaligus mencatat produksi)
+-- ============================================================
+-- TABEL PENGGAJIAN
+-- ============================================================
 CREATE TABLE IF NOT EXISTS penggajian (
     id INT AUTO_INCREMENT PRIMARY KEY,
     karyawan_id INT NOT NULL,
@@ -51,12 +70,15 @@ CREATE TABLE IF NOT EXISTS penggajian (
     total_gaji DECIMAL(12,2) NOT NULL,
     tanggal DATE NOT NULL,
     keterangan TEXT,
+    status ENUM('pending','approved') DEFAULT 'approved',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (karyawan_id) REFERENCES karyawan(id) ON DELETE CASCADE,
     FOREIGN KEY (produk_id) REFERENCES produk(id) ON DELETE CASCADE
 );
 
--- Tabel inventaris produk jadi
+-- ============================================================
+-- TABEL INVENTARIS
+-- ============================================================
 CREATE TABLE IF NOT EXISTS inventaris (
     id INT AUTO_INCREMENT PRIMARY KEY,
     produk_id INT NOT NULL UNIQUE,
@@ -66,23 +88,33 @@ CREATE TABLE IF NOT EXISTS inventaris (
 );
 
 -- ============================================================
+-- TABEL NOTIFIKASI
+-- ============================================================
+CREATE TABLE IF NOT EXISTS notifikasi (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    judul VARCHAR(100) NOT NULL,
+    pesan TEXT NOT NULL,
+    type ENUM('info','success','warning') DEFAULT 'info',
+    untuk_role ENUM('admin','owner','semua') DEFAULT 'admin',
+    dibaca TINYINT DEFAULT 0,
+    dari_user_id INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (dari_user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- ============================================================
 -- DATA AWAL (SEED)
 -- ============================================================
 
--- User default: admin / admin123
+-- User: admin / Admin@123 | owner / Owner@456
 INSERT INTO users (username, password, role) VALUES
-('admin', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin'),
-('owner', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'owner');
--- Password default: "password" (hash bcrypt)
+('admin', '$2a$10$bU0ghx0HetigrGaTAcs9we3vvgmGfBkaXlf7MhkA2E/3e8bo3uD0S', 'admin'),
+('owner', '$2a$10$K1ojFhk3WKHGnVc5to48Z.lvR9/hfrtDTFZ/fSl9TkZgiB/x/RCq6', 'owner');
 
 -- Tarif proses default
 INSERT INTO tarif_proses (proses, upah_per_pcs) VALUES
-('Potong', 1000),
-('Jahit', 2000),
-('Obras', 1500),
-('Sablon', 2500),
-('QC', 500),
-('Packing', 1000);
+('Potong', 1000), ('Jahit', 2000), ('Obras', 1500),
+('Sablon', 2500), ('QC', 500), ('Packing', 1000);
 
 -- Contoh produk
 INSERT INTO produk (nama_produk, deskripsi, harga_jual) VALUES

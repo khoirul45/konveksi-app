@@ -19,7 +19,13 @@ exports.postLogin = async (req, res) => {
       req.flash('error', 'Password salah.');
       return res.redirect('/login');
     }
-    req.session.user = { id: user.id, username: user.username, role: user.role };
+    // Simpan karyawan_id di session jika role karyawan
+    req.session.user = {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      karyawan_id: user.karyawan_id || null
+    };
     res.redirect('/dashboard');
   } catch (err) {
     console.error(err);

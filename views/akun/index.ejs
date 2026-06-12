@@ -1,0 +1,114 @@
+<%- include('../partials/header') %>
+
+<div class="card card-outline card-primary">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <h3 class="card-title mb-0"><i class="fas fa-user-cog mr-2"></i>Manajemen Akun</h3>
+    <a href="/akun/create" class="btn btn-primary btn-sm">
+      <i class="fas fa-plus"></i> Tambah Akun
+    </a>
+  </div>
+  <div class="card-body p-0">
+    <!-- Mobile -->
+    <div class="d-md-none p-2">
+      <% akun.forEach(a => { %>
+      <div class="card mb-2" style="border-left:4px solid <%= a.role==='admin'?'#3c8dbc':a.role==='owner'?'#28a745':'#ffc107' %>">
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="font-weight-bold">
+                <i class="fas fa-user mr-1"></i><%= a.username %>
+                <span class="badge badge-<%= a.role==='admin'?'primary':a.role==='owner'?'success':'warning' %> ml-1">
+                  <%= a.role %>
+                </span>
+              </div>
+              <% if (a.nama_karyawan) { %>
+              <div style="font-size:12px;color:#6c757d"><i class="fas fa-id-badge mr-1"></i><%= a.nama_karyawan %> — <%= a.jabatan %></div>
+              <% } %>
+            </div>
+            <div class="d-flex gap-1" style="gap:4px">
+              <button class="btn btn-warning btn-sm" onclick="resetModal(<%= a.id %>, '<%= a.username %>')">
+                <i class="fas fa-key"></i>
+              </button>
+              <% if (a.id !== user.id) { %>
+              <form action="/akun/<%= a.id %>?_method=DELETE" method="POST"
+                    onsubmit="return confirm('Hapus akun <%= a.username %>?')">
+                <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+              </form>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <!-- Desktop -->
+    <div class="d-none d-md-block">
+      <table class="table table-bordered table-hover mb-0">
+        <thead class="thead-dark">
+          <tr><th>#</th><th>Username</th><th>Role</th><th>Karyawan</th><th>Dibuat</th><th>Aksi</th></tr>
+        </thead>
+        <tbody>
+          <% akun.forEach((a,i) => { %>
+          <tr>
+            <td><%= i+1 %></td>
+            <td><i class="fas fa-user mr-1"></i><strong><%= a.username %></strong></td>
+            <td>
+              <span class="badge badge-<%= a.role==='admin'?'primary':a.role==='owner'?'success':'warning' %>">
+                <%= a.role %>
+              </span>
+            </td>
+            <td><%= a.nama_karyawan ? `${a.nama_karyawan} (${a.jabatan})` : '-' %></td>
+            <td><%= new Date(a.created_at).toLocaleDateString('id-ID') %></td>
+            <td>
+              <button class="btn btn-warning btn-xs" onclick="resetModal(<%= a.id %>, '<%= a.username %>')">
+                <i class="fas fa-key"></i> Reset Password
+              </button>
+              <% if (a.id !== user.id) { %>
+              <form action="/akun/<%= a.id %>?_method=DELETE" method="POST" class="d-inline"
+                    onsubmit="return confirm('Hapus akun <%= a.username %>?')">
+                <button type="submit" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></button>
+              </form>
+              <% } %>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Reset Password -->
+<div class="modal fade" id="modalReset" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title"><i class="fas fa-key mr-2"></i>Reset Password</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <form id="formReset" method="POST">
+        <div class="modal-body">
+          <p>Reset password untuk: <strong id="resetUsername"></strong></p>
+          <div class="form-group mb-0">
+            <label>Password Baru</label>
+            <input type="password" name="password_baru" class="form-control" placeholder="Min. 6 karakter" required minlength="6">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-warning">Reset</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function resetModal(id, username) {
+  document.getElementById('formReset').action = `/akun/${id}/reset-password`;
+  document.getElementById('resetUsername').textContent = username;
+  $('#modalReset').modal('show');
+}
+</script>
+
+<%- include('../partials/footer') %>

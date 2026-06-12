@@ -1,121 +1,149 @@
 <%- include('partials/header') %>
 
-<!-- Cards -->
+<% if (user.role === 'karyawan') { %>
+<!-- Dashboard Karyawan -->
+<div class="row">
+  <div class="col-md-6">
+    <div class="small-box bg-success">
+      <div class="inner">
+        <h3>Rp <small><%= Number(total_gaji).toLocaleString('id-ID') %></small></h3>
+        <p>Total Gaji Bulan Ini</p>
+      </div>
+      <div class="icon"><i class="fas fa-money-bill-wave"></i></div>
+      <a href="/penggajian" class="small-box-footer">Lihat Detail <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="small-box bg-info">
+      <div class="inner">
+        <h3><%= total_transaksi || 0 %></h3>
+        <p>Transaksi Bulan Ini</p>
+      </div>
+      <div class="icon"><i class="fas fa-clipboard-list"></i></div>
+      <a href="/penggajian" class="small-box-footer">Lihat Detail <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  </div>
+</div>
+
+<div class="card card-outline card-primary">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <h3 class="card-title"><i class="fas fa-history mr-2"></i>Riwayat Terbaru</h3>
+    <a href="/penggajian/create" class="btn btn-sm btn-primary">
+      <i class="fas fa-plus"></i> Input Baru
+    </a>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover table-sm mb-0">
+      <thead class="thead-light">
+        <tr><th>Tanggal</th><th>Produk</th><th>Proses</th><th>Jumlah</th><th>Total</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <% aktivitasTerbaru.forEach(a => { %>
+        <tr>
+          <td><%= new Date(a.tanggal).toLocaleDateString('id-ID') %></td>
+          <td><%= a.nama_produk %></td>
+          <td><span class="badge badge-secondary"><%= a.proses %></span></td>
+          <td><%= a.jumlah %> pcs</td>
+          <td class="text-success font-weight-bold">Rp <%= Number(a.total_gaji).toLocaleString('id-ID') %></td>
+          <td>
+            <span class="badge badge-<%= a.status==='pending'?'warning':'success' %>">
+              <%= a.status==='pending'?'Menunggu':'Disetujui' %>
+            </span>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (!aktivitasTerbaru.length) { %>
+        <tr><td colspan="6" class="text-center text-muted py-3">Belum ada data</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<% } else { %>
+<!-- Dashboard Admin/Owner -->
 <div class="row">
   <div class="col-lg-3 col-6">
     <div class="small-box bg-info">
-      <div class="inner">
-        <h3><%= total_karyawan %></h3>
-        <p>Total Karyawan Aktif</p>
-      </div>
+      <div class="inner"><h3><%= total_karyawan %></h3><p>Total Karyawan Aktif</p></div>
       <div class="icon"><i class="fas fa-users"></i></div>
       <a href="/karyawan" class="small-box-footer">Lihat Detail <i class="fas fa-arrow-circle-right"></i></a>
     </div>
   </div>
   <div class="col-lg-3 col-6">
     <div class="small-box bg-warning">
-      <div class="inner">
-        <h3><%= Number(produk_proses).toLocaleString('id-ID') %> <sup style="font-size:20px">pcs</sup></h3>
-        <p>Produk Dalam Proses</p>
-      </div>
+      <div class="inner"><h3><%= Number(produk_proses).toLocaleString('id-ID') %> <sup style="font-size:20px">pcs</sup></h3><p>Produk Dalam Proses</p></div>
       <div class="icon"><i class="fas fa-cogs"></i></div>
       <a href="/penggajian" class="small-box-footer">Lihat Detail <i class="fas fa-arrow-circle-right"></i></a>
     </div>
   </div>
   <div class="col-lg-3 col-6">
     <div class="small-box bg-success">
-      <div class="inner">
-        <h3><%= Number(produk_jadi).toLocaleString('id-ID') %> <sup style="font-size:20px">pcs</sup></h3>
-        <p>Produk Jadi (Stok)</p>
-      </div>
+      <div class="inner"><h3><%= Number(produk_jadi).toLocaleString('id-ID') %> <sup style="font-size:20px">pcs</sup></h3><p>Produk Jadi (Stok)</p></div>
       <div class="icon"><i class="fas fa-boxes"></i></div>
       <a href="/inventaris" class="small-box-footer">Lihat Detail <i class="fas fa-arrow-circle-right"></i></a>
     </div>
   </div>
   <div class="col-lg-3 col-6">
     <div class="small-box bg-danger">
-      <div class="inner">
-        <h3>Rp <small><%= Number(total_gaji).toLocaleString('id-ID') %></small></h3>
-        <p>Total Gaji Bulan Ini</p>
-      </div>
+      <div class="inner"><h3>Rp <small><%= Number(total_gaji).toLocaleString('id-ID') %></small></h3><p>Total Gaji Bulan Ini</p></div>
       <div class="icon"><i class="fas fa-money-bill-wave"></i></div>
       <a href="/laporan" class="small-box-footer">Lihat Laporan <i class="fas fa-arrow-circle-right"></i></a>
     </div>
   </div>
 </div>
 
+<% if (pending_count > 0) { %>
+<div class="alert alert-warning">
+  <i class="fas fa-clock mr-2"></i>
+  Ada <strong><%= pending_count %></strong> input penggajian dari karyawan yang menunggu persetujuan.
+  <a href="/penggajian" class="btn btn-sm btn-warning ml-2">Lihat & Setujui</a>
+</div>
+<% } %>
+
 <div class="row">
-  <!-- Grafik Gaji Bulanan -->
   <div class="col-md-8">
     <div class="card card-primary card-outline">
-      <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-chart-line mr-2"></i>Grafik Gaji 6 Bulan Terakhir</h3>
-      </div>
-      <div class="card-body">
-        <canvas id="grafikGaji" height="100"></canvas>
-      </div>
+      <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-line mr-2"></i>Grafik Gaji 6 Bulan Terakhir</h3></div>
+      <div class="card-body"><canvas id="grafikGaji" height="100"></canvas></div>
     </div>
   </div>
-
-  <!-- Stok Produk -->
   <div class="col-md-4">
     <div class="card card-success card-outline">
-      <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-chart-pie mr-2"></i>Stok Produk Jadi</h3>
-      </div>
-      <div class="card-body">
-        <canvas id="grafikStok" height="200"></canvas>
-      </div>
+      <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-pie mr-2"></i>Stok Produk Jadi</h3></div>
+      <div class="card-body"><canvas id="grafikStok" height="200"></canvas></div>
     </div>
   </div>
 </div>
 
-<!-- Aktivitas Terbaru -->
-<div class="row">
-  <div class="col-12">
-    <div class="card card-outline card-primary">
-      <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-history mr-2"></i>Aktivitas Terbaru</h3>
-        <div class="card-tools">
-          <a href="/penggajian/create" class="btn btn-sm btn-primary">
-            <i class="fas fa-plus"></i> Input Baru
-          </a>
-        </div>
-      </div>
-      <div class="card-body p-0">
-        <table class="table table-hover table-sm">
-          <thead class="thead-light">
-            <tr>
-              <th>Tanggal</th>
-              <th>Karyawan</th>
-              <th>Produk</th>
-              <th>Proses</th>
-              <th>Jumlah</th>
-              <th>Total Gaji</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% aktivitasTerbaru.forEach(a => { %>
-            <tr>
-              <td><%= new Date(a.tanggal).toLocaleDateString('id-ID') %></td>
-              <td><i class="fas fa-user mr-1 text-primary"></i><%= a.nama_karyawan %></td>
-              <td><i class="fas fa-tshirt mr-1 text-success"></i><%= a.nama_produk %></td>
-              <td>
-                <span class="badge badge-<%= a.proses==='Packing'?'success':a.proses==='QC'?'info':'secondary' %>">
-                  <%= a.proses %>
-                </span>
-              </td>
-              <td><%= a.jumlah %> pcs</td>
-              <td class="font-weight-bold text-success">Rp <%= Number(a.total_gaji).toLocaleString('id-ID') %></td>
-            </tr>
-            <% }) %>
-            <% if (!aktivitasTerbaru.length) { %>
-            <tr><td colspan="6" class="text-center text-muted py-3">Belum ada data</td></tr>
-            <% } %>
-          </tbody>
-        </table>
-      </div>
-    </div>
+<div class="card card-outline card-primary">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <h3 class="card-title"><i class="fas fa-history mr-2"></i>Aktivitas Terbaru</h3>
+    <% if (user.role === 'admin') { %>
+    <a href="/penggajian/create" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Input Baru</a>
+    <% } %>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover table-sm">
+      <thead class="thead-light">
+        <tr><th>Tanggal</th><th>Karyawan</th><th>Produk</th><th>Proses</th><th>Status</th><th>Total Gaji</th></tr>
+      </thead>
+      <tbody>
+        <% aktivitasTerbaru.forEach(a => { %>
+        <tr class="<%= a.status==='pending'?'table-warning':'' %>">
+          <td><%= new Date(a.tanggal).toLocaleDateString('id-ID') %></td>
+          <td><i class="fas fa-user mr-1 text-primary"></i><%= a.nama_karyawan %></td>
+          <td><i class="fas fa-tshirt mr-1 text-success"></i><%= a.nama_produk %></td>
+          <td><span class="badge badge-<%= a.proses==='Packing'?'success':a.proses==='QC'?'info':'secondary' %>"><%= a.proses %></span></td>
+          <td><span class="badge badge-<%= a.status==='pending'?'warning':'success' %>"><%= a.status==='pending'?'Menunggu':'Disetujui' %></span></td>
+          <td class="font-weight-bold text-success">Rp <%= Number(a.total_gaji).toLocaleString('id-ID') %></td>
+        </tr>
+        <% }) %>
+        <% if (!aktivitasTerbaru.length) { %>
+        <tr><td colspan="6" class="text-center text-muted py-3">Belum ada data</td></tr>
+        <% } %>
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -123,46 +151,27 @@
 window.addEventListener('load', function() {
   const grafikData = <%- JSON.stringify(grafikData) %>;
   const stokData = <%- JSON.stringify(stokData) %>;
-
   const ctx1 = document.getElementById('grafikGaji').getContext('2d');
   new Chart(ctx1, {
     type: 'bar',
     data: {
       labels: grafikData.map(d => d.label),
-      datasets: [{
-        label: 'Total Gaji (Rp)',
-        data: grafikData.map(d => d.total),
-        backgroundColor: 'rgba(60,141,188,0.6)',
-        borderColor: 'rgba(60,141,188,1)',
-        borderWidth: 2,
-        borderRadius: 5
-      }]
+      datasets: [{ label: 'Total Gaji (Rp)', data: grafikData.map(d => d.total),
+        backgroundColor: 'rgba(60,141,188,0.6)', borderColor: 'rgba(60,141,188,1)', borderWidth: 2, borderRadius: 5 }]
     },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { ticks: { callback: v => 'Rp ' + Number(v).toLocaleString('id-ID') } }
-      }
-    }
+    options: { responsive: true, plugins: { legend: { display: false } },
+      scales: { y: { ticks: { callback: v => 'Rp ' + Number(v).toLocaleString('id-ID') } } } }
   });
-
   const ctx2 = document.getElementById('grafikStok').getContext('2d');
   new Chart(ctx2, {
     type: 'doughnut',
-    data: {
-      labels: stokData.map(d => d.nama_produk),
-      datasets: [{
-        data: stokData.map(d => d.stok_jadi),
-        backgroundColor: ['#3c8dbc','#00a65a','#f39c12','#dd4b39','#605ca8','#39cccc']
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { position: 'bottom' } }
-    }
+    data: { labels: stokData.map(d => d.nama_produk),
+      datasets: [{ data: stokData.map(d => d.stok_jadi),
+        backgroundColor: ['#3c8dbc','#00a65a','#f39c12','#dd4b39','#605ca8','#39cccc'] }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
   });
 });
 </script>
+<% } %>
 
 <%- include('partials/footer') %>
