@@ -392,3 +392,18 @@ body.dark-mode .wrapper { background-color: #1a2232 !important; }
 [data-theme="dark"] table.dataTable tbody tr:hover {
   background-color: #243044 !important;
 }
+
+/* ===================================================
+   FIX BARIS PENDING (table-warning) DI DARK MODE
+   =================================================== */
+[data-theme="dark"] .table-warning,
+[data-theme="dark"] .table-warning td,
+[data-theme="dark"] .table-warning th {
+  background-color: #3d3000 !important;
+  color: #ffd082 !important;
+  border-color: #5a4500 !important;
+}
+[data-theme="dark"] .table-warning:hover,
+[data-theme="dark"] .table-warning:hover td {
+  background-color: #4a3a00 !important;
+}
