@@ -309,3 +309,86 @@ body.dark-mode .wrapper { background-color: #1a2232 !important; }
   .table td, .table th { padding: 8px !important; font-size: 13px; }
   .content { padding: 0 10px 10px !important; }
 }
+
+/* ===================================================
+   DARK MODE - FIX TEKS INPUT & TABEL
+   =================================================== */
+
+/* Input, select, textarea teks jelas di dark mode */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  color: #e0e0e0 !important;
+  background-color: #2c3e50 !important;
+  border-color: #3d5166 !important;
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #7f8c8d !important;
+}
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  color: #ffffff !important;
+  background-color: #2c3e50 !important;
+  border-color: #3c8dbc !important;
+}
+
+/* Label teks jelas */
+[data-theme="dark"] label {
+  color: #dee2e6 !important;
+}
+
+/* Select option */
+[data-theme="dark"] select option {
+  background-color: #2c3e50 !important;
+  color: #e0e0e0 !important;
+}
+
+/* Tabel teks jelas */
+[data-theme="dark"] .table tbody td,
+[data-theme="dark"] .table tbody th {
+  color: #dee2e6 !important;
+}
+
+/* Badge teks */
+[data-theme="dark"] .badge {
+  color: #fff !important;
+}
+
+/* Card teks */
+[data-theme="dark"] .card-body p,
+[data-theme="dark"] .card-body span,
+[data-theme="dark"] .card-body div {
+  color: #dee2e6;
+}
+
+/* Input group addon */
+[data-theme="dark"] .input-group-text {
+  color: #dee2e6 !important;
+  background-color: #243044 !important;
+  border-color: #3d5166 !important;
+}
+
+/* Custom file label */
+[data-theme="dark"] .custom-file-label {
+  color: #dee2e6 !important;
+  background-color: #2c3e50 !important;
+  border-color: #3d5166 !important;
+}
+[data-theme="dark"] .custom-file-label::after {
+  background-color: #1e2a38 !important;
+  color: #dee2e6 !important;
+}
+
+/* DataTables teks */
+[data-theme="dark"] .dataTables_wrapper,
+[data-theme="dark"] .dataTables_wrapper * {
+  color: #dee2e6 !important;
+}
+[data-theme="dark"] table.dataTable tbody tr {
+  background-color: #1e2a38 !important;
+}
+[data-theme="dark"] table.dataTable tbody tr:hover {
+  background-color: #243044 !important;
+}
