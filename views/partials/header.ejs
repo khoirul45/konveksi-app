@@ -112,13 +112,13 @@
           <% if (user && (user.role === 'admin' || user.role === 'owner')) { %>
           <li role="listitem"><div class="nav-header">MASTER DATA</div></li>
           <li class="nav-item" role="listitem">
-            <a href="/karyawan" class="nav-link <%= title.includes('Karyawan')?'active':'' %>">
+            <a href="/karyawan" class="nav-link <%= title==='Data Karyawan'||title==='Tambah Karyawan'||title==='Edit Karyawan'?'active':'' %>">
               <i class="nav-icon fas fa-users" aria-hidden="true"></i>
               <p>Data Karyawan</p>
             </a>
           </li>
           <li class="nav-item" role="listitem">
-            <a href="/produk" class="nav-link <%= title.includes('Produk')?'active':'' %>">
+            <a href="/produk" class="nav-link <%= title==='Master Produk'||title==='Tambah Produk'||title==='Edit Produk'||title==='Detail Produk'?'active':'' %>">
               <i class="nav-icon fas fa-tshirt" aria-hidden="true"></i>
               <p>Master Produk</p>
             </a>
@@ -127,7 +127,7 @@
 
           <li role="listitem"><div class="nav-header">OPERASIONAL</div></li>
           <li class="nav-item" role="listitem">
-            <a href="/penggajian" class="nav-link <%= title.includes('Penggajian')?'active':'' %>">
+            <a href="/penggajian" class="nav-link <%= title==='Penggajian & Produksi'||title==='Input Penggajian'||title==='Riwayat Penggajian Saya'?'active':'' %>">
               <i class="nav-icon fas fa-money-bill-wave" aria-hidden="true"></i>
               <p>Penggajian & Produksi</p>
             </a>
@@ -135,14 +135,14 @@
 
           <% if (user && (user.role === 'admin' || user.role === 'owner')) { %>
           <li class="nav-item" role="listitem">
-            <a href="/inventaris" class="nav-link <%= title.includes('Inventaris')?'active':'' %>">
+            <a href="/inventaris" class="nav-link <%= title==='Inventaris Produk Jadi'?'active':'' %>">
               <i class="nav-icon fas fa-boxes" aria-hidden="true"></i>
               <p>Inventaris Produk Jadi</p>
             </a>
           </li>
           <li role="listitem"><div class="nav-header">LAPORAN</div></li>
           <li class="nav-item" role="listitem">
-            <a href="/laporan" class="nav-link <%= title.includes('Laporan')?'active':'' %>">
+            <a href="/laporan" class="nav-link <%= title==='Laporan'?'active':'' %>">
               <i class="nav-icon fas fa-chart-bar" aria-hidden="true"></i>
               <p>Laporan & Grafik</p>
             </a>
@@ -153,7 +153,7 @@
           <% if (user && user.role === 'admin') { %>
           <li role="listitem"><div class="nav-header">PENGATURAN</div></li>
           <li class="nav-item" role="listitem">
-            <a href="/akun" class="nav-link <%= title.includes('Akun')?'active':'' %>">
+            <a href="/akun" class="nav-link <%= title==='Manajemen Akun'||title==='Tambah Akun'?'active':'' %>">
               <i class="nav-icon fas fa-user-cog" aria-hidden="true"></i>
               <p>Manajemen Akun</p>
             </a>
