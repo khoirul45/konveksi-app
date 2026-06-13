@@ -3,19 +3,21 @@
 <div class="card card-outline card-primary">
   <div class="card-header d-flex align-items-center justify-content-between">
     <h3 class="card-title mb-0"><i class="fas fa-users mr-1"></i>Daftar Karyawan</h3>
+    <% if (user.role === 'admin') { %>
     <a href="/karyawan/create" class="btn btn-primary btn-sm">
       <i class="fas fa-plus"></i> <span class="d-none d-sm-inline">Tambah Karyawan</span>
     </a>
+    <% } %>
   </div>
   <div class="card-body p-0">
 
-    <!-- MOBILE: card per karyawan -->
+    <!-- MOBILE -->
     <div class="d-md-none p-2">
       <% karyawan.forEach(k => { %>
       <div class="card mb-2" style="border-left:4px solid <%= k.status==='aktif'?'#28a745':'#dc3545' %>">
         <div class="card-body p-3">
           <div class="d-flex align-items-center">
-            <img src="/uploads/karyawan/<%= k.foto %>" alt="foto <%= k.nama %>"
+            <img src="/uploads/karyawan/<%= k.foto %>" alt="foto"
                  class="img-circle mr-3" width="50" height="50"
                  style="object-fit:cover;flex-shrink:0"
                  onerror="this.src='/uploads/karyawan/default.png'">
@@ -30,17 +32,17 @@
                 <span class="badge badge-<%= k.status==='aktif'?'success':'danger' %>"><%= k.status %></span>
               </div>
             </div>
+            <% if (user.role === 'admin') { %>
             <div class="d-flex flex-column ml-2" style="gap:4px">
               <a href="/karyawan/<%= k.id %>/edit" class="btn btn-warning btn-sm mb-1">
                 <i class="fas fa-edit"></i>
               </a>
               <form action="/karyawan/<%= k.id %>?_method=DELETE" method="POST"
                     onsubmit="return confirm('Hapus <%= k.nama %>?')">
-                <button type="submit" class="btn btn-danger btn-sm">
-                  <i class="fas fa-trash"></i>
-                </button>
+                <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
               </form>
             </div>
+            <% } %>
           </div>
         </div>
       </div>
@@ -50,7 +52,7 @@
       <% } %>
     </div>
 
-    <!-- DESKTOP: tabel -->
+    <!-- DESKTOP -->
     <div class="d-none d-md-block">
       <table id="tabelKaryawan" class="table table-bordered table-hover table-striped mb-0">
         <thead class="thead-dark">
@@ -60,14 +62,14 @@
             <th>Jabatan</th>
             <th>No. HP</th>
             <th>Status</th>
-            <th width="130">Aksi</th>
+            <% if (user.role === 'admin') { %><th width="130">Aksi</th><% } %>
           </tr>
         </thead>
         <tbody>
           <% karyawan.forEach(k => { %>
           <tr>
             <td class="text-center">
-              <img src="/uploads/karyawan/<%= k.foto %>" alt="foto <%= k.nama %>"
+              <img src="/uploads/karyawan/<%= k.foto %>" alt="foto"
                    class="img-circle" width="40" height="40"
                    style="object-fit:cover"
                    onerror="this.src='/uploads/karyawan/default.png'">
@@ -78,17 +80,17 @@
             <td>
               <span class="badge badge-<%= k.status==='aktif'?'success':'danger' %>"><%= k.status %></span>
             </td>
+            <% if (user.role === 'admin') { %>
             <td>
               <a href="/karyawan/<%= k.id %>/edit" class="btn btn-warning btn-xs">
                 <i class="fas fa-edit"></i>
               </a>
               <form action="/karyawan/<%= k.id %>?_method=DELETE" method="POST" class="d-inline"
                     onsubmit="return confirm('Hapus karyawan <%= k.nama %>?')">
-                <button type="submit" class="btn btn-danger btn-xs">
-                  <i class="fas fa-trash"></i>
-                </button>
+                <button type="submit" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></button>
               </form>
             </td>
+            <% } %>
           </tr>
           <% }) %>
         </tbody>
@@ -100,7 +102,7 @@
 
 <script>
 $(document).ready(function(){
-  $('#tabelKaryawan').DataTable({ language: {}, order: [[1,'asc']] });
+  $('#tabelKaryawan').DataTable({ order: [[1,'asc']] });
 });
 </script>
 <%- include('../partials/footer') %>

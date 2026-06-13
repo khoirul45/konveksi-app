@@ -12,6 +12,12 @@ exports.isAdmin = (req, res, next) => {
   res.redirect('/dashboard');
 };
 
+exports.isAdminOnly = (req, res, next) => {
+  if (req.session?.user?.role === 'admin') return next();
+  req.flash('error', 'Akses ditolak. Hanya admin yang diizinkan.');
+  res.redirect('/dashboard');
+};
+
 exports.isAdminOrOwner = (req, res, next) => {
   const role = req.session?.user?.role;
   if (role === 'admin' || role === 'owner') return next();
@@ -19,6 +25,7 @@ exports.isAdminOrOwner = (req, res, next) => {
   res.redirect('/dashboard');
 };
 
+// Hanya admin & karyawan yang bisa aksi (owner read-only)
 exports.isNotOwner = (req, res, next) => {
   const role = req.session?.user?.role;
   if (role === 'admin' || role === 'karyawan') return next();
@@ -26,8 +33,9 @@ exports.isNotOwner = (req, res, next) => {
   res.redirect('/dashboard');
 };
 
-exports.isAdminOnly = (req, res, next) => {
+// Hanya admin yang bisa aksi (owner & karyawan tidak bisa)
+exports.isAdminAction = (req, res, next) => {
   if (req.session?.user?.role === 'admin') return next();
-  req.flash('error', 'Akses ditolak. Hanya admin yang diizinkan.');
+  req.flash('error', 'Akses ditolak. Hanya admin yang bisa melakukan aksi ini.');
   res.redirect('/dashboard');
 };

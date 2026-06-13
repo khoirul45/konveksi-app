@@ -46,7 +46,10 @@
         <div class="dropdown-menu dropdown-menu-right" style="width:320px;max-height:400px;overflow-y:auto" id="notifDropdown">
           <div class="dropdown-item d-flex justify-content-between align-items-center">
             <span class="font-weight-bold">Notifikasi</span>
-            <a href="#" onclick="tandaiDibaca()" class="small text-primary">Tandai dibaca</a>
+            <div style="display:flex;gap:8px">
+              <a href="#" onclick="tandaiDibaca()" class="small text-primary">Tandai dibaca</a>
+              <a href="#" onclick="hapusSemua()" class="small text-danger">Hapus semua</a>
+            </div>
           </div>
           <div class="dropdown-divider"></div>
           <div id="notifList">

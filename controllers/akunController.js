@@ -72,6 +72,14 @@ exports.resetPassword = async (req, res) => {
   try {
     const { password_baru } = req.body;
     const id = req.params.id;
+
+    // Cek target akun
+    const [target] = await db.query('SELECT role FROM users WHERE id=?', [id]);
+    if (!target.length) {
+      req.flash('error', 'Akun tidak ditemukan.');
+      return res.redirect('/akun');
+    }
+
     if (!password_baru || password_baru.length < 6) {
       req.flash('error', 'Password minimal 6 karakter.');
       return res.redirect('/akun');
@@ -90,10 +98,24 @@ exports.resetPassword = async (req, res) => {
 exports.destroy = async (req, res) => {
   try {
     const id = req.params.id;
+
+    // Tidak bisa hapus akun sendiri
     if (parseInt(id) === req.session.user.id) {
       req.flash('error', 'Tidak bisa menghapus akun sendiri.');
       return res.redirect('/akun');
     }
+
+    // Tidak bisa hapus akun owner
+    const [target] = await db.query('SELECT role, username FROM users WHERE id=?', [id]);
+    if (!target.length) {
+      req.flash('error', 'Akun tidak ditemukan.');
+      return res.redirect('/akun');
+    }
+    if (target[0].role === 'owner') {
+      req.flash('error', 'Akun owner tidak bisa dihapus oleh admin.');
+      return res.redirect('/akun');
+    }
+
     await db.query('DELETE FROM users WHERE id = ?', [id]);
     req.flash('success', 'Akun berhasil dihapus.');
     res.redirect('/akun');

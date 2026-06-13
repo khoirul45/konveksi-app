@@ -83,8 +83,17 @@ function loadNotifikasi() {
     .catch(() => {});
 }
 
-function tandaiDibaca() {
+function tandaiDibaca(e) {
+  if (e) e.preventDefault();
   fetch('/notifikasi/baca', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+    .then(() => loadNotifikasi())
+    .catch(() => {});
+}
+
+function hapusSemua(e) {
+  if (e) e.preventDefault();
+  if (!confirm('Hapus semua notifikasi?')) return;
+  fetch('/notifikasi/hapus-semua', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
     .then(() => loadNotifikasi())
     .catch(() => {});
 }
