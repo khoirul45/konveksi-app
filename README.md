@@ -228,10 +228,10 @@ Dashboard & Inventaris update otomatis
 
 | No | Nama | NIM | Prodi | Universitas |
 |----|------|-----|-------|-------------|
-| 1 | [Siti Mubarokatul Laila W F] | [202351115] | [Teknik Informatika] | [Muria Kudus] |
-| 2 | [Afriza Yusuf Awaludin] | [202451029] | [Teknik Informatika] | [Muria Kudus] |
-| 3 | [Muhammad Khoirul Mustofa] | [202451050] | [Teknik Informatika] | [Muria Kudus] |
-| 4 | [Adib Rizqi Abyanto] | [202451070] | [Teknik Informatika] | [Muria Kudus] |
+| 1 | Siti Mubarokatul Laila W F | 202351115 | Teknik Informatika | Muria Kudus |
+| 2 | Afriza Yusuf Awaludin | 202451029 | Teknik Informatika | Muria Kudus |
+| 3 | Muhammad Khoirul Mustofa | 202451050 | Teknik Informatika | Muria Kudus |
+| 4 | Adib Rizqi Abyanto | 202451070 | Teknik Informatika | Muria Kudus |
 
 ---
 
