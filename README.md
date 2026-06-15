@@ -217,15 +217,10 @@ Dashboard & Inventaris update otomatis
 
 ### Dashboard Admin
 > Menampilkan statistik real-time: total karyawan, produk dalam proses, stok jadi, total gaji, grafik bulanan, dan aktivitas terbaru.
-
+   ![Dashboard](screenshots/dashboard1.png)
 ### Dashboard Karyawan
 > Menampilkan riwayat penggajian milik sendiri dan tombol input penggajian baru.
-
-### Sistem Approval
-> Penggajian dari karyawan tampil dengan status "Menunggu" (kuning), admin dapat menyetujui dengan satu klik.
-
-### Dark Mode
-> Seluruh halaman mendukung tema gelap, otomatis mengikuti setting sistem atau bisa diubah manual.
+   ![Dashboard](screenshots/dashboard2.png)
 
 ---
 
@@ -233,10 +228,10 @@ Dashboard & Inventaris update otomatis
 
 | No | Nama | NIM | Prodi | Universitas |
 |----|------|-----|-------|-------------|
-| 1 | [Nama Kamu] | [NIM] | [Program Studi] | [Universitas] |
-| 2 | [Nama Anggota 2] | [NIM] | [Program Studi] | [Universitas] |
-| 3 | [Nama Anggota 3] | [NIM] | [Program Studi] | [Universitas] |
-| 4 | [Nama Anggota 4] | [NIM] | [Program Studi] | [Universitas] |
+| 1 | [Siti Mubarokatul Laila W F] | [202351115] | [Teknik Informatika] | [Muria Kudus] |
+| 2 | [Afriza Yusuf Awaludin] | [202451029] | [Teknik Informatika] | [Muria Kudus] |
+| 3 | [Muhammad Khoirul Mustofa] | [202451050] | [Teknik Informatika] | [Muria Kudus] |
+| 4 | [Adib Rizqi Abyanto] | [202451070] | [Teknik Informatika] | [Muria Kudus] |
 
 ---
 
