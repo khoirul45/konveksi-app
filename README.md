@@ -351,10 +351,10 @@ Dashboard & Inventaris update otomatis
 
 ### Dashboard Admin
 > Menampilkan statistik real-time: total karyawan, produk dalam proses, stok jadi, total gaji, grafik bulanan, dan aktivitas terbaru.
-   ![Dashboard](screenshots/dashboard1.png)
+   ![Dashboard](screenshots/dashboard_admin&owner.png)
 ### Dashboard Karyawan
 > Menampilkan riwayat penggajian milik sendiri dan tombol input penggajian baru.
-   ![Dashboard](screenshots/dashboard2.png)
+   ![Dashboard](screenshots/dashboard_karyawan.png)
 
 ---
 
