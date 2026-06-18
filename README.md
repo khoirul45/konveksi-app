@@ -51,6 +51,140 @@ Sistem manajemen konveksi berbasis web untuk mengelola **penggajian borongan**, 
 
 ---
 
+## 👨‍💻 Pembagian Kontribusi Per Anggota
+
+Berikut rincian fitur dan bagian kode yang dikerjakan oleh masing-masing anggota kelompok.
+
+| # | Anggota | NIM | Fitur yang Dikerjakan | Halaman |
+|---|---------|-----|-----------------------|---------|
+| 1 | Muhammad Khoirul Mustofa | 202451050 | Login, Dashboard & Sistem Keamanan | `/login`, `/dashboard` |
+| 2 | Adib Rizqi Abyanto | 202451070 | Manajemen Karyawan & Manajemen Produk | `/karyawan`, `/produk` |
+| 3 | Afriza Yusuf Awaludin | 202451029 | Penggajian Borongan & Monitoring Produksi | `/penggajian` |
+| 4 | Siti Mubarokatul Laila W F | 202351115 | Inventaris, Laporan PDF & Notifikasi | `/inventaris`, `/laporan` |
+
+---
+
+### 1️⃣ Muhammad Khoirul Mustofa — Login, Dashboard & Sistem Keamanan
+
+**File utama:** `controllers/authController.js`, `middleware/auth.js`, `app.js`, `config/db.js`
+
+**Fitur Login (`/login`)**
+
+Menangani autentikasi user via `authController.js`. Saat login, password diverifikasi menggunakan `bcrypt.compare()` terhadap hash di database (password tidak pernah disimpan dalam bentuk asli). Jika cocok, data user disimpan ke session (`req.session.user`) beserta role-nya. Logout menghapus session via `req.session.destroy()`.
+
+**Sistem Keamanan — Middleware (`middleware/auth.js`)**
+
+Middleware berperan sebagai "penjaga pintu" yang diperiksa sebelum user mengakses halaman manapun:
+
+| Middleware | Fungsi |
+|------------|--------|
+| `isLoggedIn` | Cek apakah user sudah login; jika belum → redirect ke `/login` |
+| `isAdmin` | Hanya role `admin` yang boleh akses |
+| `isAdminOrOwner` | Role `admin` atau `owner` yang boleh akses |
+| `isNotOwner` | Admin dan karyawan boleh, owner tidak |
+| `isAdminAction` | Hanya admin yang bisa lakukan aksi (lainnya read-only) |
+
+**Fitur Dashboard (`/dashboard`)**
+
+Dashboard menampilkan konten berbeda tergantung role yang login (`app.js` baris 44–103):
+- **Admin/Owner**: statistik total karyawan aktif, produk dalam proses, stok jadi, total gaji bulan ini, tabel aktivitas terbaru, grafik gaji 6 bulan terakhir.
+- **Karyawan**: hanya total gaji bulan ini milik sendiri + riwayat transaksi sendiri.
+
+Koneksi database menggunakan connection pool di `config/db.js` (maks 10 koneksi bersamaan, konfigurasi dari `.env`).
+
+---
+
+### 2️⃣ Adib Rizqi Abyanto — Manajemen Karyawan & Manajemen Produk
+
+**File utama:** `controllers/karyawanController.js`, `controllers/produkController.js`
+
+**Fitur Manajemen Karyawan (`/karyawan`)**
+
+Mencakup CRUD lengkap karyawan beserta upload foto profil menggunakan library **Multer**:
+- Foto disimpan ke `public/uploads/karyawan/` dengan nama unik berbasis timestamp agar tidak bentrok.
+- Validasi: hanya file gambar (`.jpg`, `.png`, `.gif`) dengan ukuran maks 2MB yang diterima.
+- Saat karyawan **diedit** dan ada foto baru diunggah → foto lama otomatis dihapus dari folder.
+- Saat karyawan **dihapus** → file foto ikut dihapus dari folder sebelum record di database dihapus.
+- Jika tidak ada foto diunggah saat buat karyawan baru, sistem memakai `default.png`.
+
+**Fitur Manajemen Produk (`/produk`)**
+
+Mencakup CRUD produk beserta halaman detail monitoring produksi:
+- Saat produk baru ditambahkan (`store()`), sistem **otomatis membuat record inventaris** dengan `stok_jadi = 0` — tanpa input manual.
+- Halaman detail produk (`detail()`) menampilkan progress produksi per tahap (Potong → Jahit → Obras → Sablon → QC → Packing) menggunakan `GROUP BY proses` + `ORDER BY FIELD(...)`.
+- Saat produk dihapus, jika masih ada data penggajian terkait, sistem menangkap error `ER_ROW_IS_REFERENCED_2` dan menampilkan pesan yang informatif (produk tidak bisa dihapus).
+
+---
+
+### 3️⃣ Afriza Yusuf Awaludin — Penggajian Borongan & Monitoring Produksi
+
+**File utama:** `controllers/penggajianController.js`, `routes/penggajianRoutes.js`
+
+**Konsep Penggajian Borongan**
+
+Satu kali input penggajian = sekaligus mencatat gaji DAN progress produksi. Gaji dihitung otomatis: `jumlah_pcs × upah_per_pcs` (tarif diambil dari tabel `tarif_proses`).
+
+**Workflow Approval**
+
+| Yang Input | Status Awal |
+|------------|-------------|
+| Karyawan | `pending` |
+| Admin | `approved` langsung |
+
+**Fitur-fitur utama yang dikerjakan (`penggajianController.js`):**
+
+- **`index()`** — Daftar penggajian dengan filter bulan/tahun/karyawan. Karyawan hanya bisa melihat data milik sendiri (filter `WHERE karyawan_id = ?`).
+- **`store()`** — Proses simpan penggajian dengan 4 blok logika:
+  1. Validasi input (field wajib, proses harus salah satu dari 6 tahap valid, jumlah > 0).
+  2. Hitung `total_gaji = jumlah × upah_per_pcs` dan tentukan status berdasarkan role.
+  3. Jika proses = `Packing` dan status langsung `approved` → stok inventaris otomatis bertambah.
+  4. Jika yang input adalah karyawan → kirim notifikasi ke admin.
+- **`approve()`** — Admin setujui penggajian `pending`: ubah status jadi `approved`, dan jika proses `Packing` → update stok inventaris.
+- **`destroy()`** — Hapus penggajian dengan aturan: karyawan hanya bisa hapus milik sendiri yang masih `pending`. Jika data `Packing approved` dihapus → stok di-rollback (`GREATEST(stok - jumlah, 0)` agar tidak negatif).
+- **`getTarif()`** — Endpoint AJAX untuk auto-fill tarif di form saat user memilih proses, tanpa reload halaman.
+
+---
+
+### 4️⃣ Siti Mubarokatul Laila W F — Inventaris, Laporan PDF & Notifikasi
+
+**File utama:** `controllers/inventarisController.js`, `controllers/laporanController.js`, `controllers/notifikasiController.js`, `controllers/akunController.js`, `public/js/main.js`
+
+**Fitur Inventaris (`/inventaris`)**
+
+Stok **tidak diinput manual** — berubah otomatis dari modul penggajian. Admin hanya bisa melakukan koreksi jika ada selisih fisik:
+- `index()`: menampilkan daftar produk + stok jadi + nilai rupiah (`stok_jadi × harga_jual`) + total nilai seluruh stok.
+- `koreksi()`: update stok ke nilai yang diinginkan, dengan validasi stok tidak boleh negatif.
+
+**Fitur Laporan PDF (`/laporan`)**
+
+- Halaman laporan menampilkan rekap gaji per karyawan, rekap produksi per proses, dan grafik tren gaji 6 bulan terakhir — bisa difilter per bulan/tahun.
+- **Export PDF Gaji** (`exportPdfGaji()`): menggunakan library **PDFKit** untuk membuat file PDF langsung dari Node.js. Header HTTP diset agar browser otomatis download (`Content-Disposition: attachment`). PDF berisi daftar transaksi gaji + grand total.
+- **Export PDF Inventaris** (`exportPdfInventaris()`): format tabel nama produk, stok, harga jual, nilai stok, dan total nilai keseluruhan.
+
+**Fitur Notifikasi Real-time (`/notifikasi`)**
+
+Bekerja berbasis AJAX — JavaScript di browser polling data dari server tanpa refresh halaman:
+- Notifikasi otomatis dibuat saat karyawan submit penggajian.
+- Auto-hapus notifikasi yang sudah lebih dari 30 hari.
+- Menampilkan badge angka merah di navbar untuk notifikasi yang belum dibaca.
+- Admin bisa tandai semua sudah dibaca atau hapus semua notifikasi.
+
+**Fitur Manajemen Akun (`/akun`)**
+
+- `store()`: buat akun baru dengan validasi username unik, password minimal 6 karakter, dan hash bcrypt sebelum disimpan.
+- `destroy()`: proteksi ganda — tidak bisa hapus akun sendiri, dan tidak bisa hapus akun `owner`.
+
+**Fitur Frontend (`public/js/main.js`)**
+
+| Fitur | Cara Kerja |
+|-------|------------|
+| Auto-hide flash message | Pesan sukses/error otomatis fade out setelah 4 detik |
+| Konfirmasi sebelum hapus | Dialog konfirmasi muncul sebelum aksi hapus dieksekusi |
+| Format angka rupiah | Input harga dibersihkan dari karakter non-angka |
+| Proteksi double-submit | Tombol Submit di-disable setelah diklik agar tidak submit 2x |
+
+---
+
 ## 🚀 Cara Menjalankan Lokal
 
 ### 1. Clone Repository
@@ -228,10 +362,10 @@ Dashboard & Inventaris update otomatis
 
 | No | Nama | NIM | Prodi | Universitas |
 |----|------|-----|-------|-------------|
-| 1 | Siti Mubarokatul Laila W F | 202351115 | Teknik Informatika | Muria Kudus |
-| 2 | Afriza Yusuf Awaludin | 202451029 | Teknik Informatika | Muria Kudus |
-| 3 | Muhammad Khoirul Mustofa | 202451050 | Teknik Informatika | Muria Kudus |
-| 4 | Adib Rizqi Abyanto | 202451070 | Teknik Informatika | Muria Kudus |
+| 1 | Muhammad Khoirul Mustofa | 202451050 | Teknik Informatika | Muria Kudus |
+| 2 | Adib Rizqi Abyanto | 202451070 | Teknik Informatika | Muria Kudus |
+| 3 | Afriza Yusuf Awaludin | 202451029 | Teknik Informatika | Muria Kudus |
+| 4 | Siti Mubarokatul Laila W F | 202351115 | Teknik Informatika | Muria Kudus |
 
 ---
 
